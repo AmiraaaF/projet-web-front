@@ -1,0 +1,348 @@
+/* login_style.css */
+
+/* --- Variables CSS (Palette et Polices) --- */
+:root {
+    --color-primary: #2980B9; /* Bleu profond pour CTA et accents principaux */
+    --color-primary-hover: #3498DB; /* Bleu plus clair pour survol */
+    --color-background-pane: #FFFFFF; /* Fond du volet formulaire */
+    --color-visual-pane-bg: #EBF5FB; /* Fond très clair pour le volet visuel, un bleu très pâle */
+    --color-text-primary: #34495E; /* Gris foncé pour texte principal */
+    --color-text-secondary: #7F8C8D; /* Gris moyen pour labels et liens secondaires */
+    --color-text-light: #FFFFFF;
+    --color-border: #D5DBDB; /* Gris clair pour bordures */
+    --color-error: #E74C3C; /* Rouge Alizarin pour erreurs */
+    --color-success: #2ECC71; /* Vert Emerald pour succès */
+
+    --font-primary: 'Montserrat', sans-serif; /* Pour les titres */
+    --font-secondary: 'Open Sans', sans-serif; /* Pour le corps et les formulaires */
+}
+
+/* --- Styles Généraux --- */
+body {
+    font-family: var(--font-secondary);
+    color: var(--color-text-primary);
+    background-color: #F4F6F8; /* Fond général de la page */
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    line-height: 1.6;
+}
+
+.auth-container {
+    display: flex;
+    width: 100%;
+    max-width: 1200px; /* Largeur maximale du conteneur */
+    min-height: 80vh; /* Hauteur minimale pour un bon affichage */
+    max-height: 900px;
+    background-color: var(--color-background-pane);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden; /* Pour que les coins arrondis s'appliquent aux enfants */
+}
+
+/* --- Volet Visuel (Gauche sur Desktop) --- */
+.auth-visual-pane {
+    flex-basis: 45%; /* 45% de la largeur */
+    background-color: var(--color-visual-pane-bg);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    text-align: center;
+    position: relative; /* Pour positionner des éléments absolus si besoin */
+}
+
+.auth-visual-pane .parking-illustration {
+    max-width: 80%;
+    height: auto;
+    margin-bottom: 20px;
+    animation: fadeInImage 1s ease-out;
+}
+
+.auth-visual-pane h1 {
+    font-family: var(--font-primary);
+    font-size: 2.8em;
+    color: var(--color-primary);
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.auth-visual-pane .slogan {
+    font-family: var(--font-secondary);
+    font-size: 1.2em;
+    color: var(--color-text-secondary);
+    font-weight: 400;
+}
+
+/* --- Volet Formulaire (Droite sur Desktop) --- */
+.auth-form-pane {
+    flex-basis: 55%; /* 55% de la largeur */
+    padding: 40px 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: var(--color-background-pane);
+}
+
+.form-wrapper {
+    width: 100%;
+    max-width: 400px; /* Limite la largeur du formulaire pour une meilleure lisibilité */
+    margin: 0 auto; /* Centre le formulaire dans le volet */
+}
+
+.auth-form-pane h2 {
+    font-family: var(--font-primary);
+    font-size: 2em;
+    color: var(--color-text-primary);
+    margin-bottom: 30px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-family: var(--font-secondary);
+    font-size: 0.9em;
+    color: var(--color-text-secondary);
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.form-group input[type="email"],
+.form-group input[type="password"],
+.form-group input[type="text"] {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid var(--color-border);
+    border-radius: 5px;
+    font-family: var(--font-secondary);
+    font-size: 1em;
+    color: var(--color-text-primary);
+    box-sizing: border-box; /* Important pour que padding ne change pas la largeur */
+    transition: border-color 0.3s ease;
+}
+
+.form-group input[type="email"]:focus,
+.form-group input[type="password"]:focus,
+.form-group input[type="text"]:focus {
+    border-color: var(--color-primary);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    font-size: 0.9em;
+}
+
+.remember-me {
+    display: flex;
+    align-items: center;
+}
+
+.remember-me input[type="checkbox"] {
+    margin-right: 8px;
+    accent-color: var(--color-primary);
+}
+
+.remember-me label,
+.forgot-password {
+    color: var(--color-text-secondary);
+    text-decoration: none;
+}
+
+.forgot-password:hover {
+    color: var(--color-primary);
+    text-decoration: underline;
+}
+
+.btn-submit {
+    width: 100%;
+    padding: 12px 15px;
+    background-color: var(--color-primary);
+    color: var(--color-text-light);
+    border: none;
+    border-radius: 5px;
+    font-family: var(--font-primary);
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-transform: uppercase;
+}
+
+.btn-submit:hover {
+    background-color: var(--color-primary-hover);
+}
+
+.auth-switch {
+    text-align: center;
+    margin-top: 25px;
+    font-size: 0.95em;
+    color: var(--color-text-secondary);
+}
+
+.auth-switch a {
+    color: var(--color-primary);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.auth-switch a:hover {
+    text-decoration: underline;
+}
+
+/* Styles pour la connexion via réseaux sociaux */
+.social-login {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.social-login p {
+    font-size: 0.9em;
+    color: var(--color-text-secondary);
+    margin-bottom: 15px;
+    position: relative;
+}
+
+/* Ligne de séparation pour "Ou connectez-vous avec" */
+.social-login p::before,
+.social-login p::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 30%; /* Ajustez pour la longueur des lignes */
+    height: 1px;
+    background-color: var(--color-border);
+}
+
+.social-login p::before {
+    left: 0;
+}
+
+.social-login p::after {
+    right: 0;
+}
+
+.social-buttons {
+    display: flex;
+    justify-content: center; /* Ou space-around si vous préférez */
+    gap: 15px; /* Espace entre les boutons */
+}
+
+.btn-social {
+    flex-grow: 1; /* Pour que les boutons prennent une largeur égale si nécessaire */
+    max-width: 180px;
+    padding: 10px 15px;
+    border: 1px solid var(--color-border);
+    border-radius: 5px;
+    background-color: #fff;
+    color: var(--color-text-primary);
+    font-family: var(--font-secondary);
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-social img {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+}
+
+.btn-social.google:hover {
+    border-color: #DB4437;
+    background-color: #f8e8e6;
+}
+
+.btn-social.facebook:hover {
+    border-color: #3b5998;
+    background-color: #e7eaf1;
+}
+
+/* --- Animations --- */
+@keyframes fadeInImage {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* --- Responsive Design --- */
+@media (max-width: 992px) {
+    .auth-container {
+        flex-direction: column;
+        min-height: 100vh;
+        max-height: none;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .auth-visual-pane {
+        flex-basis: auto; /* Réinitialise la base flexible */
+        padding: 30px 20px;
+        min-height: 30vh; /* Donne une hauteur minimale au volet visuel */
+    }
+
+    .auth-visual-pane .parking-illustration {
+        max-width: 50%;
+        max-height: 150px; /* Limite la hauteur de l'image sur mobile */
+    }
+    
+    .auth-visual-pane h1 {
+        font-size: 2.2em;
+    }
+
+    .auth-visual-pane .slogan {
+        font-size: 1em;
+    }
+
+    .auth-form-pane {
+        flex-basis: auto;
+        padding: 30px 20px;
+    }
+
+    .form-wrapper {
+        max-width: 100%; /* Utilise toute la largeur disponible */
+    }
+    
+    .social-buttons {
+        flex-direction: column; /* Boutons sociaux en colonne sur mobile */
+    }
+    .btn-social {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-visual-pane h1 {
+        font-size: 1.8em;
+    }
+    .auth-form-pane h2 {
+        font-size: 1.6em;
+    }
+    .form-options {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+}
+

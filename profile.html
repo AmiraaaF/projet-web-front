@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Profil - Parkly</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/profile.css"> <!-- Specific styles for profile page -->
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <a href="/">Parkly</a>
+        </div>
+       <nav>
+            
+
+            <ul class="nav-links">
+                <li><a href="/">Accueil</a></li>
+                <li><a href="/search.html">Rechercher</a></li>
+                <li><a href="/blog.html">Blog</a></li>
+                <li><a href="/chat.html">Chat</a></li> 
+                <!-- <li><a href="/profile.html" id="profile-link">Mon Profil</a></li> -->
+
+            </ul>
+            <div class="auth-links" id="auth-links">
+            <!-- Rempli dynamiquement via JS -->
+            </div>
+
+        </nav>
+        <div class="burger">
+            <div class="line1"></div>
+            <div class="line2"></div>
+            <div class="line3"></div>
+        </div>
+    </header>
+
+    <main>
+        <div class="profile-container form-container">
+            <h2>Mon Profil</h2>
+            <div id="message-container"></div>
+            
+            <div class="profile-view">
+                <img src="/assets/images/default-avatar.png" alt="Avatar" class="profile-avatar" id="profile-avatar-img">
+                <div class="profile-details">
+                    <p><strong>Nom d'utilisateur:</strong> <span id="profile-username">Chargement...</span></p>
+                    <p><strong>Email:</strong> <span id="profile-email">Chargement...</span></p>
+                    <p><strong>Rôle:</strong> <span id="profile-role">Chargement...</span></p>
+                    <p><strong>Nom complet:</strong> <span id="profile-full-name">Non défini</span></p>
+                    <p><strong>Bio:</strong> <span id="profile-bio">Non définie</span></p>
+                    <p><strong>Membre depuis:</strong> <span id="profile-created-at">Chargement...</span></p>
+                    <p><strong>Dernière connexion:</strong> <span id="profile-last-login">Chargement...</span></p>
+                    <!-- Preferences could be displayed here if structured -->
+                </div>
+                <button id="edit-profile-btn" class="cta-button">Modifier le Profil</button>
+            </div>
+
+            <div class="profile-edit hidden">
+                <h3>Modifier mes informations</h3>
+                <form id="edit-profile-form">
+                    <div class="form-group">
+                        <label for="edit-full-name">Nom complet</label>
+                        <input type="text" id="edit-full-name" name="full_name">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-avatar-url">URL de l'avatar</label>
+                        <input type="url" id="edit-avatar-url" name="avatar_url" placeholder="https://example.com/avatar.png">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-bio">Bio</label>
+                        <textarea id="edit-bio" name="bio"></textarea>
+                    </div>
+                    <!-- Add fields for preferences if needed -->
+                    <div class="form-actions">
+                        <button type="submit" id="save-profile-button" class="cta-button">Enregistrer</button>
+                        <button type="button" id="cancel-edit-btn" class="cta-button secondary">Annuler</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Parkly. Tous droits réservés.</p>
+        <p><a href="/privacy.html">Politique de confidentialité</a> | <a href="/terms.html">Conditions d'utilisation</a></p>
+    </footer>
+
+    <script src="/script.js"></script>
+    <script src="/profile.js"></script>
+</body>
+</html>
+

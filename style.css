@@ -1,0 +1,500 @@
+/* Styles généraux */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f7f6;
+    color: #333;
+    line-height: 1.6;
+}
+
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+header {
+    background-color: #ffffff;
+    color: #333;
+    padding: 1rem 5%; /* Utilisation de pourcentage pour le padding latéral */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+header .logo a {
+    color: #333;
+    font-size: 1.8em;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+nav ul.nav-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+}
+
+nav ul.nav-links li {
+    margin-left: 25px;
+}
+
+nav ul.nav-links li a {
+    color: #333;
+    text-decoration: none;
+    font-size: 1em;
+    padding: 0.5rem 0;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+nav ul.nav-links li a:hover,
+nav ul.nav-links li a.active {
+    color: #007bff;
+}
+
+nav ul.nav-links li a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background-color: #007bff;
+    transition: width 0.3s ease;
+}
+
+nav ul.nav-links li a:hover::after,
+nav ul.nav-links li a.active::after {
+    width: 100%;
+}
+
+.auth-links {
+    display: flex;
+    align-items: center;
+}
+
+.auth-button,
+.auth-links button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 0.9em;
+    margin-left: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.auth-button:hover,
+.auth-links button:hover {
+    background-color: #0056b3;
+}
+
+.auth-links .login-button {
+    background-color: #28a745; /* Vert pour connexion */
+}
+.auth-links .login-button:hover {
+    background-color: #1e7e34;
+}
+
+/* Styles pour le menu déroulant du profil */
+.profile-dropdown-container {
+    position: relative;
+    display: flex; /* Pour aligner l'icône et le message d'accueil */
+    align-items: center;
+}
+
+.profile-icon {
+    cursor: pointer;
+    font-size: 1.8em; /* Ajuster la taille de l'icône */
+    margin-right: 8px;
+    color: #333;
+    display: inline-block;
+}
+
+.welcome-user {
+    font-size: 0.9em;
+    color: #555;
+    margin-right: 15px;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    right: 0; /* Aligner à droite de l'icône */
+    top: 100%; /* Apparaître sous l'icône */
+    border-radius: 4px;
+    padding: 8px 0;
+}
+
+.dropdown-content.show {
+    display: block;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 10px 16px;
+    text-decoration: none;
+    display: block;
+    font-size: 0.9em;
+}
+
+.dropdown-content a:hover {
+    background-color: #f1f1f1;
+}
+
+
+main {
+    padding: 2rem 5%; /* Utilisation de pourcentage pour le padding latéral */
+    max-width: 1200px; /* Limite la largeur du contenu principal */
+    margin: 0 auto; /* Centre le contenu principal */
+}
+
+.hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #e9ecef;
+    padding: 3rem 5%;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    flex-wrap: wrap; /* Pour la responsivité */
+}
+
+.hero-text {
+    flex-basis: 50%; /* Prend 50% de la largeur */
+    padding-right: 2rem; /* Espace entre texte et image */
+}
+
+.hero-text h1 {
+    font-size: 2.8em;
+    color: #003366; /* Bleu foncé pour le titre */
+    margin-bottom: 0.5rem;
+}
+
+.hero-text p {
+    font-size: 1.2em;
+    margin-bottom: 1.5rem;
+    color: #555;
+}
+
+.cta-button {
+    background-color: #ff8c00; /* Orange pour le CTA */
+    color: white;
+    padding: 0.8rem 1.8rem;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.1em;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    display: inline-block;
+}
+
+.cta-button:hover {
+    background-color: #cc7000;
+    transform: translateY(-2px);
+}
+
+.hero-image-container {
+    flex-basis: 45%; /* Prend 45% de la largeur */
+    text-align: center; /* Centre l'image si elle est plus petite */
+}
+
+#hero-main-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+}
+
+.features, .how-it-works {
+    padding: 2rem 0;
+    text-align: center;
+}
+
+.features h2, .how-it-works h2 {
+    font-size: 2.2em;
+    margin-bottom: 2rem;
+    color: #003366;
+}
+
+.feature-cards, .steps-container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+}
+
+.feature-card, .step {
+    background-color: #ffffff;
+    padding: 1.8rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+    flex-basis: calc(33.333% - 2rem); /* 3 cartes par ligne, avec espacement */
+    min-width: 280px; /* Largeur minimale pour la responsivité */
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover, .step:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.12);
+}
+
+.feature-card img {
+    width: 60px; /* Taille des icônes */
+    height: 60px;
+    margin-bottom: 1rem;
+}
+
+.feature-card h3, .step h3 {
+    font-size: 1.4em;
+    margin-bottom: 0.5rem;
+    color: #0056b3;
+}
+
+.step-icon {
+    background-color: #007bff;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.step-arrow {
+    font-size: 2em;
+    color: #007bff;
+    align-self: center;
+    margin: 0 1rem;
+}
+
+footer {
+    background-color: #343a40;
+    color: #f8f9fa;
+    text-align: center;
+    padding: 1.5rem 5%;
+    margin-top: 2rem;
+}
+
+footer p {
+    margin: 0.3rem 0;
+    font-size: 0.9em;
+}
+
+footer a {
+    color: #00bfff; /* Bleu ciel pour les liens du footer */
+}
+
+/* Burger menu pour mobile */
+.burger {
+    display: none; /* Caché par défaut sur desktop */
+    cursor: pointer;
+}
+
+.burger div {
+    width: 25px;
+    height: 3px;
+    background-color: #333;
+    margin: 5px;
+    transition: all 0.3s ease;
+}
+
+/* Styles pour les formulaires (login, register) */
+.form-container {
+    max-width: 450px;
+    margin: 2rem auto;
+    padding: 2.5rem;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.form-container h2 {
+    text-align: center;
+    margin-bottom: 1.8rem;
+    color: #003366;
+}
+
+.form-container label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    color: #555;
+}
+
+.form-container input[type="text"],
+.form-container input[type="password"],
+.form-container input[type="email"] {
+    width: calc(100% - 20px); /* Prend en compte le padding */
+    padding: 12px;
+    margin-bottom: 1.2rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1em;
+}
+
+.form-container button {
+    width: 100%;
+    padding: 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.form-container button:hover {
+    background-color: #0056b3;
+}
+
+.form-container p {
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.form-container p a {
+    color: #007bff;
+    font-weight: bold;
+}
+
+/* Messages d'erreur/succès */
+.message {
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    text-align: center;
+}
+.message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+.message.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    header {
+        padding: 1rem 3%;
+    }
+
+    nav ul.nav-links {
+        position: absolute;
+        right: 0px;
+        height: 92vh;
+        top: 8vh; /* Hauteur du header */
+        background-color: #ffffff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 60%;
+        transform: translateX(100%);
+        transition: transform 0.5s ease-in;
+        box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+    }
+
+    nav ul.nav-links.nav-active {
+        transform: translateX(0%);
+    }
+
+    nav ul.nav-links li {
+        margin: 20px 0;
+        opacity: 0;
+    }
+
+    .burger {
+        display: block;
+    }
+
+    .hero {
+        flex-direction: column;
+        padding: 2rem 3%;
+    }
+
+    .hero-text {
+        flex-basis: 100%;
+        padding-right: 0;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .hero-image-container {
+        flex-basis: 100%;
+    }
+
+    .feature-card, .step {
+        flex-basis: calc(50% - 1rem); /* 2 cartes par ligne sur tablette */
+    }
+
+    .steps-container {
+        flex-direction: column;
+        align-items: center;
+    }
+    .step-arrow {
+        transform: rotate(90deg);
+        margin: 1rem 0;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .feature-card, .step {
+        flex-basis: 100%; /* 1 carte par ligne sur mobile */
+    }
+    header .logo a {
+        font-size: 1.5em;
+    }
+    nav ul.nav-links {
+        width: 70%;
+    }
+}
+
+/* Animation pour les liens du menu burger */
+@keyframes navLinkFade {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0px);
+    }
+}
+
+.toggle .line1 {
+    transform: rotate(-45deg) translate(-5px, 6px);
+}
+.toggle .line2 {
+    opacity: 0;
+}
+.toggle .line3 {
+    transform: rotate(45deg) translate(-5px, -6px);
+}
+

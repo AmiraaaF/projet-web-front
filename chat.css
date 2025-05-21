@@ -1,0 +1,232 @@
+/* Styles spécifiques pour la page de Chat */
+
+.chat-page h2 {
+    text-align: center;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+    font-size: 2.2rem;
+}
+
+.chat-page .subtitle {
+    text-align: center;
+    color: #555;
+    margin-bottom: 30px;
+    font-size: 1.1rem;
+}
+
+.chat-container {
+    display: flex;
+    height: calc(100vh - var(--header-height) - 180px); /* Adjust based on header/footer/padding */
+    min-height: 500px; /* Minimum height for the chat area */
+    background-color: var(--card-background);
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    overflow: hidden; /* Important for layout */
+}
+
+.chat-sidebar {
+    flex-basis: 250px;
+    background-color: #f0f4f8; /* Slightly different background for sidebar */
+    padding: 20px;
+    border-right: 1px solid var(--border-color);
+    overflow-y: auto;
+}
+
+.chat-sidebar h4 {
+    color: var(--primary-color);
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.chat-sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px 0;
+}
+
+.chat-sidebar ul li {
+    padding: 8px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    font-size: 0.95rem;
+}
+
+.chat-sidebar ul li:hover {
+    background-color: #e0e8ef;
+}
+
+.chat-sidebar ul li.active-room {
+    background-color: var(--primary-color);
+    color: var(--light-text-color);
+    font-weight: 500;
+}
+
+.chat-sidebar #user-list li {
+    cursor: default;
+    color: #555;
+    padding-left: 20px; /* Indent user names */
+    position: relative;
+}
+
+.chat-sidebar #user-list li::before {
+    content: "\2022"; /* Bullet point */
+    color: var(--success-color); /* Green for online status */
+    font-weight: bold;
+    display: inline-block; 
+    width: 1em;
+    margin-left: -1em;
+    position: absolute;
+    left: 5px;
+    top: 7px;
+    font-size: 1.2em;
+}
+
+.chat-sidebar #user-list li.no-users::before {
+    display: none;
+}
+
+.chat-main {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--card-background);
+}
+
+#chat-window {
+    flex-grow: 1;
+    padding: 20px;
+    overflow-y: auto;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.chat-message {
+    margin-bottom: 15px;
+    display: flex;
+    animation: fadeInMessage 0.3s ease-out;
+}
+
+@keyframes fadeInMessage {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.chat-message .message-avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+    align-self: flex-start; /* Align avatar to the top of the message block */
+}
+
+.chat-message .message-content {
+    max-width: 75%;
+    padding: 10px 15px;
+    border-radius: 15px;
+    background-color: #e9eef2;
+    position: relative;
+}
+
+.chat-message .message-sender {
+    font-weight: 500;
+    color: var(--primary-color);
+    font-size: 0.9rem;
+    margin-bottom: 3px;
+}
+
+.chat-message .message-text {
+    font-size: 1rem;
+    line-height: 1.5;
+    word-wrap: break-word;
+}
+
+.chat-message .message-time {
+    font-size: 0.75rem;
+    color: #888;
+    display: block;
+    margin-top: 5px;
+    text-align: right;
+}
+
+/* My messages aligned to the right */
+.chat-message.my-message {
+    justify-content: flex-end;
+}
+
+.chat-message.my-message .message-content {
+    background-color: var(--primary-color);
+    color: var(--light-text-color);
+}
+
+.chat-message.my-message .message-sender {
+    color: var(--secondary-color); /* Different color for my name if needed, or hide */
+    text-align: right;
+}
+
+.chat-message.my-message .message-avatar {
+    order: 1; /* Move avatar to the right */
+    margin-right: 0;
+    margin-left: 10px;
+}
+
+/* System messages (joins, leaves, errors) */
+.chat-message.system-message .message-content {
+    background-color: transparent;
+    width: 100%;
+    text-align: center;
+    padding: 5px 0;
+}
+.chat-message.system-message .message-text {
+    font-style: italic;
+    color: #777;
+    font-size: 0.9rem;
+}
+.chat-message.system-message .message-avatar {
+    display: none;
+}
+
+
+#chat-input-area {
+    display: flex;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-top: 1px solid var(--border-color);
+}
+
+#chat-message-input {
+    flex-grow: 1;
+    margin-bottom: 0;
+    border-radius: 20px;
+    padding: 10px 15px;
+    resize: none; /* Prevent manual resize, handle with JS if needed */
+    margin-right: 10px;
+    border: 1px solid var(--border-color);
+}
+
+#send-chat-message-btn {
+    white-space: nowrap;
+    padding: 10px 20px;
+}
+
+/* Responsive adjustments for chat page */
+@media screen and (max-width: 768px) {
+    .chat-container {
+        flex-direction: column;
+        height: auto; /* Allow content to define height */
+        min-height: calc(100vh - var(--header-height) - 80px); /* Adjust for smaller screens */
+    }
+    .chat-sidebar {
+        flex-basis: auto;
+        max-height: 200px; /* Limit sidebar height on mobile */
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+    }
+    #chat-window {
+        min-height: 300px; /* Ensure chat window has some height */
+    }
+}
+

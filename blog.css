@@ -1,0 +1,219 @@
+/* Styles spécifiques à la page du blog  */
+/* titres */
+h2 {
+    text-align: center;
+    font-size: 2rem;    
+}
+p.subtitle {
+    text-align: center;
+    font-size: 1.5rem;
+    color: #555;
+}
+
+/* Conteneur principal du blog */
+.blog-main-container {
+    display: flex;
+    max-width: 1200px; 
+    margin: 20px auto;
+    padding: 0 15px;
+    gap: 20px; /* Espace entre la zone de contenu et la sidebar */
+}
+
+/* Zone de contenu principale (posts et création) */
+.blog-content-area {
+    flex: 3; /* Prend plus de place que la sidebar */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    justify-content: center;
+}
+
+/* Section pour créer un nouveau post */
+.create-post-section {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.create-post-header {
+    display: flex;
+    align-items: flex-start; /* Aligner l'avatar en haut */
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.current-user-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover; /* S'assure que l'image couvre bien sans se déformer */
+}
+
+#new-post-content-input {
+    flex-grow: 1;
+    min-height: 60px; /* Hauteur minimale pour le textarea */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 1rem;
+    resize: vertical; /* Permet le redimensionnement vertical */
+}
+
+.create-post-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+#submit-new-post-btn {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    /* Styles du bouton cta-button de votre style.css global seront appliqués */
+}
+
+/* Section pour afficher le fil des posts */
+.posts-feed-section {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.posts-list .blog-post {
+    background-color: #f9f9f9; /* Légèrement différent du fond de la section */
+    border: 1px solid #eee;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+}
+
+.posts-list .blog-post:last-child {
+    margin-bottom: 0;
+}
+
+.post-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.user-avatar img, .user-avatar-placeholder {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.user-avatar-placeholder {
+    background-color: #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: #777;
+}
+
+.user-info strong {
+    display: block;
+    font-size: 0.95rem;
+    color: #333;
+}
+
+.user-info .timestamp {
+    font-size: 0.8rem;
+    color: #777;
+}
+
+.post-title {
+    font-size: 1.2rem;
+    color: #222;
+    margin-top: 0;
+    margin-bottom: 8px;
+}
+
+.post-content p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #444;
+    margin-bottom: 0;
+}
+
+.no-posts-message {
+    text-align: center;
+    color: #777;
+    padding: 20px 0;
+}
+
+/* Colonne latérale (Sidebar) */
+.blog-sidebar {
+    flex: 1;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    height: fit-content; /* S'ajuste à son contenu */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.sidebar-widget {
+    margin-bottom: 20px;
+}
+
+.sidebar-widget:last-child {
+    margin-bottom: 0;
+}
+
+.sidebar-widget h4 {
+    font-size: 1.1rem;
+    color: #333;
+    margin-top: 0;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 8px;
+}
+
+.sidebar-widget p {
+    font-size: 0.9rem;
+    color: #555;
+    line-height: 1.5;
+}
+
+/* Styles pour les messages d'erreur/succès  */
+#message-container-blog .message {
+    padding: 10px;
+    margin-top: 15px;
+    border-radius: 4px;
+    text-align: center;
+}
+
+#message-container-blog .message.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+#message-container-blog .message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .blog-main-container {
+        flex-direction: column;
+    }
+
+    .blog-content-area,
+    .blog-sidebar {
+        flex: none; /* Reset flex property */
+        width: 100%;
+    }
+}
+

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rechercher un Parking - Parkly</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/search.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- GSAP for potential animations on this page too -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <a href="/">Parkly</a>
+        </div>
+       <nav>
+            
+
+            <ul class="nav-links">
+                <li><a href="/">Accueil</a></li>
+                <li><a href="/search.html">Rechercher</a></li>
+                <li><a href="/blog.html">Blog</a></li>
+                <li><a href="/chat.html">Chat</a></li> 
+                <!-- <li><a href="/profile.html" id="profile-link">Mon Profil</a></li> -->
+
+            </ul>
+            <div class="auth-links" id="auth-links">
+            <!-- Rempli dynamiquement via JS -->
+            </div>
+
+        </nav>
+        <div class="burger">
+            <div class="line1"></div>
+            <div class="line2"></div>
+            <div class="line3"></div>
+        </div>
+    </header>
+
+    <main>
+        <section class="search-interface">
+            <h2>Trouver un Parking</h2>
+            <div id="message-container-search"></div>
+            <div class="search-controls">
+                <form id="search-form">
+                    <input type="text" id="address-input" placeholder="Entrez une adresse">
+                    <button type="submit">Rechercher</button>
+                </form>
+                <div class="form-group">
+                    <label>Ou utiliser ma position actuelle :</label>
+                    <button id="geolocate-btn" class="cta-button secondary">Me Géolocaliser</button>
+                </div>
+                <div class="form-group advanced-filters-toggle">
+                    <button id="toggle-filters-btn">Filtres avancés &or;</button>
+                </div>
+                <div id="advanced-filters" class="hidden">
+                    <div class="form-group">
+                        <label for="radius-input">Rayon de recherche (km) :</label>
+                        <input type="number" id="radius-input" value="5" min="1" max="50">
+                    </div>
+                    <div class="form-group">
+                        <label for="type-filter">Type de parking :</label>
+                        <select id="type-filter">
+                            <option value="">Tous</option>
+                            <option value="public">Public</option>
+                            <option value="private">Privé</option>
+                            <option value="covered">Couvert</option>
+                            <option value="outdoor">Extérieur</option>
+                        </select>
+                    </div>
+                     <div class="form-group">
+                        <label for="availability-filter">Disponibilité minimum :</label>
+                        <input type="number" id="availability-filter" min="0" placeholder="Ex: 5">
+                    </div>
+                    <button id="apply-filters-btn" class="cta-button">Appliquer les Filtres</button>
+                </div>
+            </div>
+
+            <div id="map-container">
+                <div id="map"></div>
+            </div>
+            
+            <div id="search-results-container">
+                <h3>Résultats de la recherche</h3>
+                <div id="results-list" class="results-grid">
+                    <!-- Les résultats seront injectés ici par JavaScript -->
+                    <p class="no-results">Aucun parking trouvé pour le moment. Lancez une recherche !</p>
+                </div>
+                <div id="pagination-controls" class="pagination">
+                    <!-- Les contrôles de pagination seront injectés ici -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Parkly. Tous droits réservés.</p>
+        <p><a href="/privacy.html">Politique de confidentialité</a> | <a href="/terms.html">Conditions d_utilisation</a></p>
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="/script.js"></script>
+    <script src="/search.js"></script>
+</body>
+</html>
+
