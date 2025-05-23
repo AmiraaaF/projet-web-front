@@ -204,6 +204,30 @@ p.subtitle {
     border: 1px solid #f5c6cb;
 }
 
+/* Styles pour les actions sur les posts */
+.post-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+}
+
+.delete-post-btn {
+    background: none;
+    border: none;
+    color: #dc3545;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.delete-post-btn:hover {
+    background-color: #dc3545;
+    color: white;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .blog-main-container {

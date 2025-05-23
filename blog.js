@@ -51,28 +51,28 @@ async function loadPosts() {
   const container = document.getElementById("posts-container");
   try {
     if (typeof API_URL === 'undefined') throw new Error("API_URL non définie.");
-    const res = await fetch(`${API_URL}/api/posts`);
-    const responseText = await res.text(); // Lire la réponse en texte d'abord
+    const res = await fetch(`${API_URL}/api/posts`, {
+      credentials: "include",
+      mode: "cors"
+  });
+    const responseText = await res.text();
 
     if (!res.ok) {
         let errorMsg = `Erreur serveur ${res.status}.`;
         try {
-            const errorData = JSON.parse(responseText); // Essayer de parser le texte comme JSON
+            const errorData = JSON.parse(responseText);
             errorMsg = errorData.error || errorData.message || errorMsg;
         } catch (e) {
-            // Si ce n'est pas du JSON, utiliser le texte brut (ou une partie)
             errorMsg += ` Réponse brute: ${responseText.substring(0, 200)}${responseText.length > 200 ? "..." : ""}`;
             console.error("Réponse non-JSON du serveur (GET /posts):", responseText);
         }
         throw new Error(errorMsg);
     }
 
-    const posts = JSON.parse(responseText); // Parser le texte en JSON si la réponse est OK
+    const posts = JSON.parse(responseText);
 
     if (!container) return;
-    container.innerHTML = ""; 
-
-    
+    container.innerHTML = "";
 
     if (posts && posts.length > 0) {
         posts.forEach(post => {
@@ -90,8 +90,19 @@ async function loadPosts() {
             <div class="post-content">
               <p>${post.content}</p>
             </div>
+            <div class="post-actions">
+              ${post.current_user_role === "admin" ? `<button class="delete-post-btn" data-id="${post.id}">🗑️ Supprimer</button>` : ""}
+            </div>
           `;
           container.appendChild(div);
+
+          // Ajouter l'écouteur d'événement pour le bouton de suppression si l'utilisateur est admin
+          if (post.current_user_role === "admin") {
+            const deleteBtn = div.querySelector(".delete-post-btn");
+            if (deleteBtn) {
+              deleteBtn.addEventListener("click", () => deletePost(post.id));
+            }
+          }
         });
     } else {
         container.innerHTML = "<p>Aucun post à afficher pour le moment.</p>";
@@ -152,6 +163,32 @@ async function submitPost() {
   } catch (err) {
     console.error("Erreur post message :", err);
     window.displayMessage("error", `Erreur : ${err.message}. Assurez-vous d'être connecté et que le serveur fonctionne correctement.`, "message-container-blog");
+  }
+}
+
+// Fonction pour supprimer un post
+async function deletePost(postId) {
+  if (!confirm("Êtes-vous sûr de vouloir supprimer ce post ?")) {
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/admin/posts/${postId}`, {
+      method: "DELETE",
+      credentials: "include",
+      mode: "cors"
+    });
+
+    if (response.ok) {
+      window.displayMessage("success", "Post supprimé avec succès", "message-container-blog");
+      loadPosts(); // Recharger la liste des posts
+    } else {
+      const error = await response.json();
+      throw new Error(error.error || "Erreur lors de la suppression du post");
+    }
+  } catch (error) {
+    console.error("Erreur lors de la suppression du post:", error);
+    window.displayMessage("error", error.message, "message-container-blog");
   }
 }
 

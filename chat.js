@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const roomList = document.getElementById("room-list");
     const userList = document.getElementById("user-list");
     const messageContainerChat = document.getElementById("message-container-chat");
+    const createRoomForm = document.getElementById("create-room-form");
 
     let socket;
     let currentUser = null;
@@ -29,13 +30,46 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     function appendMessage(data) {
+        console.log("currentUser dans appendMessage:", currentUser);
         const div = document.createElement("div");
         div.className = "chat-message";
-        div.innerHTML = `<strong>${data.username}:</strong> ${data.message}`;
+        div.innerHTML = `
+        <strong>${data.username}:</strong> ${data.message}
+        ${currentUser?.role === "admin" ? `<button class="delete-message-btn" data-id="${data.id}">🗑️</button>` : ""}
+    `;
         chatWindow.appendChild(div);
         chatWindow.scrollTop = chatWindow.scrollHeight;
+
+        if (currentUser?.role === "admin") {
+            const deleteBtn = div.querySelector(".delete-message-btn");
+            if (deleteBtn) {
+                deleteBtn.addEventListener("click", async () => {
+                    const confirmed = confirm("Supprimer ce message ?");
+                    if (!confirmed) return;
+
+                    try {
+                        const res = await fetch(`${API_BASE_URL}/admin/messages/${data.id}`, {
+                            method: "DELETE",
+                            credentials: "include",
+                            mode: "cors"
+                        });
+
+                        if (res.ok) {
+                            div.remove();
+                            displayChatMessage("success", "Message supprimé");
+                        } else {
+                            const error = await res.json();
+                            displayChatMessage("error", error.message || "Erreur suppression");
+                        }
+                    } catch (err) {
+                        console.error("Erreur suppression message :", err);
+                        displayChatMessage("error", "Erreur réseau");
+                    }
+                });
+            }
+        }
     }
-    
+
     async function loadChatHistory() {
         try {
             const res = await fetch("http://localhost:3002/api/messages", {
@@ -45,6 +79,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const messages = await res.json();
             messages.forEach(msg => {
                 appendMessage({
+                    id: msg.id,
                     username: msg.username,
                     message: msg.content,
                     created_at: msg.created_at
@@ -54,7 +89,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             console.error("Erreur lors du chargement de l'historique :", error);
         }
     }
-
 
     function addUserToList(roomId, userId, username) {
         if (!activeUsers[roomId]) activeUsers[roomId] = {};
@@ -87,6 +121,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             });
             if (response.ok) {
                 currentUser = await response.json();
+                console.log("currentUser après /profile :", currentUser);
                 await loadChatHistory();
                 connectWebSocket();
             } else {
@@ -191,28 +226,55 @@ document.addEventListener("DOMContentLoaded", async () => {
         messageInput.value = "";
     }
 
-        if (sendMessageBtn) {
-            sendMessageBtn.addEventListener("click", sendMessage);
-        }
+    if (sendMessageBtn) {
+        sendMessageBtn.addEventListener("click", sendMessage);
+    }
 
-        if (messageInput) {
-            messageInput.addEventListener("keypress", (e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    sendMessage();
-                }
-            });
-        }
+    if (messageInput) {
+        messageInput.addEventListener("keypress", (e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+    }
 
-        if (roomList) {
-            roomList.addEventListener("click", (e) => {
-                if (e.target.tagName === "LI" && e.target.dataset.roomId) {
-                    const newRoom = e.target.dataset.roomId;
-                    if (newRoom !== currentRoom) {
-                        joinRoom(newRoom);
-                    }
+    if (roomList) {
+        roomList.addEventListener("click", (e) => {
+            if (e.target.tagName === "LI" && e.target.dataset.roomId) {
+                const newRoom = e.target.dataset.roomId;
+                if (newRoom !== currentRoom) {
+                    joinRoom(newRoom);
                 }
-            });
+            }
+        });
+    }
+
+    if (createRoomForm) {
+        createRoomForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const roomNameInput = document.getElementById("new-room-name");
+            const roomName = roomNameInput.value.trim();
+            if (!roomName) return alert("Le nom du salon ne peut pas être vide !");
+            try {
+                const res = await fetch('http://localhost:3002/rooms', {
+                    method: "POST",
+                    credentials: "include",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name: roomName })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    alert("Salon créé !");
+                    roomNameInput.value = "";
+                    // Recharge la liste des salons ici si besoin
+                } else {
+                    alert(data.error || "Erreur lors de la création du salon");
+                }
+            } catch (err) {
+                alert("Erreur réseau");
+            }
+        });
     }
 
     // Lancement
@@ -224,6 +286,43 @@ document.addEventListener("DOMContentLoaded", async () => {
         gsap.from(".chat-main", { duration: 0.7, x: 50, opacity: 0, ease: "power2.out", delay: 0.3 });
         gsap.from("#chat-input-area", { duration: 0.5, y: 30, opacity: 0, ease: "power2.out", delay: 0.5 });
     }
-    
-
 });
+
+function appendRoom(room) {
+    const div = document.createElement("div");
+    div.className = "chat-room";
+    div.innerHTML = `
+        <span>${room.name}</span>
+        ${currentUser?.role === "admin" ? `<button class="delete-room-btn" data-id="${room.id}">🗑️</button>` : ""}
+    `;
+    roomsContainer.appendChild(div);
+
+    if (currentUser?.role === "admin") {
+        const deleteBtn = div.querySelector(".delete-room-btn");
+        if (deleteBtn) {
+            deleteBtn.addEventListener("click", async () => {
+                const confirmed = confirm("Supprimer ce salon ?");
+                if (!confirmed) return;
+
+                try {
+                    const res = await fetch('http://localhost:3002/rooms', {
+                        method: "DELETE",
+                        credentials: "include",
+                        mode: "cors"
+                    });
+
+                    if (res.ok) {
+                        div.remove();
+                        displayChatMessage("success", "Salon supprimé");
+                    } else {
+                        const error = await res.json();
+                        displayChatMessage("error", error.message || "Erreur suppression salon");
+                    }
+                } catch (err) {
+                    console.error("Erreur suppression salon :", err);
+                    displayChatMessage("error", "Erreur réseau");
+                }
+            });
+        }
+    }
+}
