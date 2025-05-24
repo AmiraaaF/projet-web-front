@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     async function loadChatHistory() {
         try {
-            const res = await fetch("http://localhost:3002/api/messages", {
+            const res = await fetch(`${API_BASE_URL}/api/messages`, {
                 credentials: "include"
             });
 
@@ -139,7 +139,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (!currentUser) return;
 
         const wsProtocol = location.protocol === "https:" ? "wss:" : "ws:";
-        const wsUrl = `ws://localhost:3002/ws`; // pas besoin des params username/userId
+        const wsUrl = `${wsProtocol}//${API_BASE_URL.replace('http://', '' )}/ws`; // pas besoin des params username/userId
 
         socket = new WebSocket(wsUrl);
 
@@ -257,7 +257,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const roomName = roomNameInput.value.trim();
             if (!roomName) return alert("Le nom du salon ne peut pas être vide !");
             try {
-                const res = await fetch('http://localhost:3002/rooms', {
+                const res = await fetch(`${API_BASE_URL}/rooms`, {
                     method: "POST",
                     credentials: "include",
                     headers: { "Content-Type": "application/json" },
