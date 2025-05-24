@@ -138,7 +138,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     function connectWebSocket() {
         if (!currentUser) return;
 
-        const wsProtocol = location.protocol === "http:" ? "wss:" : "ws:";
+        const wsProtocol = location.protocol === "https:" ? "wss:" : "ws:";
         const wsUrl = `${wsProtocol}//${API_BASE_URL.replace('http://', '' )}/ws`; // pas besoin des params username/userId
 
         socket = new WebSocket(wsUrl);
