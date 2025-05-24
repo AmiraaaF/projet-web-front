@@ -1,243 +1,488 @@
-/* Styles spécifiques à la page du blog  */
-/* titres */
-h2 {
-    text-align: center;
-    font-size: 2rem;    
+
+:root {
+    /* Palette de couleurs */
+    --color-primary: #2980B9; /* Bleu Parkly */
+    --color-primary-light: #3498DB; /* Bleu plus clair pour survol */
+    --color-primary-dark: #1F618D; /* Bleu plus foncé pour éléments actifs */
+    --color-secondary: #2ECC71; /* Vert pour éléments secondaires */
+    --color-background: #F4F6F8; /* Fond principal clair */
+    --color-card-bg: #FFFFFF; /* Fond des cartes */
+    --color-sidebar-bg: #EBF5FB; /* Bleu très pâle pour sidebar */
+    --color-text-primary: #34495E; /* Gris foncé pour texte principal */
+    --color-text-secondary: #7F8C8D; /* Gris moyen pour texte secondaire */
+    --color-text-light: #FFFFFF; /* Blanc pour texte sur fond coloré */
+    --color-border: #D5DBDB; /* Gris clair pour bordures */
+    --color-error: #E74C3C; /* Rouge pour erreurs */
+    --color-warning: #F39C12; /* Orange pour avertissements */
+    --color-success: #2ECC71; /* Vert pour succès */
+    
+    /* Ombres */
+    --shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 5px 15px rgba(0, 0, 0, 0.05);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+    
+    /* Bordures */
+    --border-radius-sm: 5px;
+    --border-radius-md: 10px;
+    --border-radius-lg: 15px;
+    --border-radius-full: 50%;
 }
-p.subtitle {
+
+/* Styles généraux de la page blog */
+.blog-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    font-family: 'Open Sans', sans-serif;
+    color: var(--color-text-primary);
+}
+
+.blog-page h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 2.5rem;
+    color: var(--color-primary);
     text-align: center;
+    margin-bottom: 0.5rem;
+    position: relative;
+}
+
+.blog-page .subtitle {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 1.2rem;
+    color: var(--color-text-secondary);
+    text-align: center;
+    margin-bottom: 2.5rem;
+    position: relative;
+}
+
+/* Conteneur principal avec image de fond */
+.blog-header {
+    position: relative;
+    padding: 3rem 1rem;
+    margin-bottom: 2rem;
+    text-align: center;
+    border-radius: var(--border-radius-md);
+    overflow: hidden;
+    background-color: var(--color-sidebar-bg);
+}
+
+.blog-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('parking_illustration.png');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.1;
+    z-index: 0;
+}
+
+.blog-header h2, .blog-header .subtitle {
+    position: relative;
+    z-index: 1;
+}
+
+/* Structure principale du blog */
+.blog-container {
+    display: flex;
+    gap: 2rem;
+}
+
+/* Zone principale des posts */
+.posts-list-container {
+    flex: 7;
+    background-color: var(--color-card-bg);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-md);
+    padding: 2rem;
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.posts-list-container h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
     font-size: 1.5rem;
-    color: #555;
+    color: var(--color-primary);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--color-primary-light);
 }
 
-/* Conteneur principal du blog */
-.blog-main-container {
-    display: flex;
-    max-width: 1200px; 
-    margin: 20px auto;
-    padding: 0 15px;
-    gap: 20px; /* Espace entre la zone de contenu et la sidebar */
+/* Grille de posts */
+.posts-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
 }
 
-/* Zone de contenu principale (posts et création) */
-.blog-content-area {
-    flex: 3; /* Prend plus de place que la sidebar */
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-
-    justify-content: center;
+/* Style des posts individuels */
+.blog-post {
+    background-color: var(--color-card-bg);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid var(--color-border);
+    border-top: 4px solid var(--color-primary);
 }
 
-/* Section pour créer un nouveau post */
-.create-post-section {
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-
-.create-post-header {
-    display: flex;
-    align-items: flex-start; /* Aligner l'avatar en haut */
-    gap: 15px;
-    margin-bottom: 15px;
-}
-
-.current-user-avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    object-fit: cover; /* S'assure que l'image couvre bien sans se déformer */
-}
-
-#new-post-content-input {
-    flex-grow: 1;
-    min-height: 60px; /* Hauteur minimale pour le textarea */
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-family: inherit;
-    font-size: 1rem;
-    resize: vertical; /* Permet le redimensionnement vertical */
-}
-
-.create-post-actions {
-    display: flex;
-    justify-content: flex-end;
-}
-
-#submit-new-post-btn {
-    padding: 10px 20px;
-    font-size: 0.9rem;
-    /* Styles du bouton cta-button de votre style.css global seront appliqués */
-}
-
-/* Section pour afficher le fil des posts */
-.posts-feed-section {
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-
-.posts-list .blog-post {
-    background-color: #f9f9f9; /* Légèrement différent du fond de la section */
-    border: 1px solid #eee;
-    border-radius: 6px;
-    padding: 15px;
-    margin-bottom: 20px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
-}
-
-.posts-list .blog-post:last-child {
-    margin-bottom: 0;
+.blog-post:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
 }
 
 .post-header {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
+    padding: 1rem 1.5rem;
+    background-color: rgba(235, 245, 251, 0.5);
+    border-bottom: 1px solid var(--color-border);
 }
 
-.user-avatar img, .user-avatar-placeholder {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.user-avatar-placeholder {
-    background-color: #e0e0e0;
+.user-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: var(--border-radius-full);
+    background-color: var(--color-primary-light);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
-    color: #777;
+    color: var(--color-text-light);
+    font-size: 1.5rem;
+    margin-right: 1rem;
+    overflow: hidden;
+}
+
+.user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.user-info {
+    flex: 1;
 }
 
 .user-info strong {
     display: block;
-    font-size: 0.95rem;
-    color: #333;
+    font-size: 1rem;
+    color: var(--color-primary-dark);
+    margin-bottom: 0.25rem;
 }
 
 .user-info .timestamp {
-    font-size: 0.8rem;
-    color: #777;
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
 }
 
-.post-title {
-    font-size: 1.2rem;
-    color: #222;
+.post-content {
+    padding: 1.5rem;
+}
+
+.post-content h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.4rem;
+    color: var(--color-text-primary);
     margin-top: 0;
-    margin-bottom: 8px;
+    margin-bottom: 1rem;
+    text-align: left;
 }
 
 .post-content p {
-    font-size: 0.95rem;
+    font-size: 1rem;
     line-height: 1.6;
-    color: #444;
-    margin-bottom: 0;
+    color: var(--color-text-primary);
+    margin-bottom: 1rem;
 }
 
-.no-posts-message {
-    text-align: center;
-    color: #777;
-    padding: 20px 0;
+/* Actions sur les posts */
+.post-actions {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 1.5rem;
+    background-color: rgba(235, 245, 251, 0.3);
+    border-top: 1px solid var(--color-border);
 }
 
-/* Colonne latérale (Sidebar) */
-.blog-sidebar {
-    flex: 1;
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 20px;
-    height: fit-content; /* S'ajuste à son contenu */
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-
-.sidebar-widget {
-    margin-bottom: 20px;
-}
-
-.sidebar-widget:last-child {
-    margin-bottom: 0;
-}
-
-.sidebar-widget h4 {
-    font-size: 1.1rem;
-    color: #333;
-    margin-top: 0;
-    margin-bottom: 10px;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 8px;
-}
-
-.sidebar-widget p {
+.post-actions button {
+    background: none;
+    border: none;
+    font-family: 'Open Sans', sans-serif;
     font-size: 0.9rem;
-    color: #555;
-    line-height: 1.5;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+    border-radius: var(--border-radius-sm);
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* Styles pour les messages d'erreur/succès  */
-#message-container-blog .message {
-    padding: 10px;
-    margin-top: 15px;
-    border-radius: 4px;
+.post-actions button:hover {
+    background-color: rgba(41, 128, 185, 0.1);
+    color: var(--color-primary);
+}
+
+.post-actions button svg {
+    margin-right: 0.5rem;
+}
+
+.post-actions .delete-post-btn {
+    color: var(--color-error);
+}
+
+.post-actions .delete-post-btn:hover {
+    background-color: rgba(231, 76, 60, 0.1);
+}
+
+/* Message quand pas de posts */
+.no-posts {
     text-align: center;
+    padding: 3rem 1rem;
+    color: var(--color-text-secondary);
+    font-style: italic;
+    background-image: url('parking_illustration.png');
+    background-size: 150px;
+    background-position: center 30px;
+    background-repeat: no-repeat;
+    padding-top: 180px;
+    opacity: 0.7;
+}
+
+/* Section de création de post */
+.new-post-section {
+    flex: 3;
+    background-color: var(--color-card-bg);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-md);
+    padding: 1.5rem;
+    height: fit-content;
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.new-post-section h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 1.3rem;
+    color: var(--color-primary);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--color-primary-light);
+}
+
+#login-message {
+    text-align: center;
+    padding: 1.5rem;
+    background-color: var(--color-sidebar-bg);
+    border-radius: var(--border-radius-sm);
+    margin-bottom: 1rem;
+}
+
+#login-message p {
+    color: var(--color-text-secondary);
+    margin-bottom: 1rem;
+}
+
+#login-message a {
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border: 2px solid var(--color-primary);
+    border-radius: var(--border-radius-sm);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+#login-message a:hover {
+    background-color: var(--color-primary);
+    color: var(--color-text-light);
+}
+
+/* Formulaire de création de post */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.form-group input[type="text"],
+.form-group textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-sm);
+    font-family: 'Open Sans', sans-serif;
+    font-size: 1rem;
+    color: var(--color-text-primary);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-group input[type="text"]:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(41, 128, 185, 0.2);
+}
+
+.form-group textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* Bouton de soumission */
+.cta-button {
+    display: inline-block;
+    background-color: var(--color-primary);
+    color: var(--color-text-light);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    text-align: center;
+    width: 100%;
+}
+
+.cta-button:hover {
+    background-color: var(--color-primary-light);
+    transform: translateY(-2px);
+}
+
+.cta-button:active {
+    transform: translateY(0);
+}
+
+/* Messages d'erreur/succès */
+#message-container-blog {
+    margin-bottom: 2rem;
+}
+
+#message-container-blog .message {
+    padding: 1rem;
+    border-radius: var(--border-radius-sm);
+    font-size: 0.95rem;
+    text-align: center;
+    animation: fadeInMessage 0.3s ease-out;
+}
+
+@keyframes fadeInMessage {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 #message-container-blog .message.success {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
+    background-color: rgba(46, 204, 113, 0.2);
+    color: var(--color-success);
+    border: 1px solid var(--color-success);
 }
 
 #message-container-blog .message.error {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
+    background-color: rgba(231, 76, 60, 0.2);
+    color: var(--color-error);
+    border: 1px solid var(--color-error);
 }
 
-/* Styles pour les actions sur les posts */
-.post-actions {
+/* Pagination */
+.pagination {
     display: flex;
-    justify-content: flex-end;
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px solid #eee;
+    justify-content: center;
+    margin-top: 2rem;
+    gap: 0.5rem;
 }
 
-.delete-post-btn {
-    background: none;
-    border: none;
-    color: #dc3545;
+.pagination button {
+    background-color: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-primary);
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius-sm);
     cursor: pointer;
-    padding: 5px 10px;
-    border-radius: 4px;
-    transition: background-color 0.2s;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.delete-post-btn:hover {
-    background-color: #dc3545;
-    color: white;
+.pagination button:hover {
+    background-color: var(--color-primary-light);
+    color: var(--color-text-light);
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .blog-main-container {
+.pagination button.active {
+    background-color: var(--color-primary);
+    color: var(--color-text-light);
+    border-color: var(--color-primary);
+}
+
+/* Responsive design */
+@media (max-width: 992px) {
+    .blog-container {
         flex-direction: column;
     }
-
-    .blog-content-area,
-    .blog-sidebar {
-        flex: none; /* Reset flex property */
+    
+    .posts-list-container, .new-post-section {
+        flex: none;
         width: 100%;
+    }
+    
+    .new-post-section {
+        margin-top: 2rem;
     }
 }
 
+@media (max-width: 768px) {
+    .blog-page h2 {
+        font-size: 2rem;
+    }
+    
+    .blog-page .subtitle {
+        font-size: 1rem;
+    }
+    
+    .blog-header {
+        padding: 2rem 1rem;
+    }
+    
+    .posts-list-container, .new-post-section {
+        padding: 1.5rem;
+    }
+    
+    .post-header {
+        padding: 1rem;
+    }
+    
+    .post-content {
+        padding: 1rem;
+    }
+    
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+/* Classes utilitaires */
+.hidden {
+    display: none;
+}
