@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://projet-web-back.cluster-ig3.igpolytech.fr:3002";
+const API_BASE_URL = "http://projet-web-back.cluster-ig3.igpolytech.fr:3002";
 
 document.addEventListener("DOMContentLoaded", async () => {
     const chatWindow = document.getElementById("chat-window");
@@ -138,8 +138,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     function connectWebSocket() {
         if (!currentUser) return;
 
-        const wsProtocol = location.protocol === "https:" ? "wss:" : "ws:";
-        const wsUrl = `${wsProtocol}//${API_BASE_URL.replace('https://', '' )}/ws`; // pas besoin des params username/userId
+        const wsProtocol = location.protocol === "http:" ? "wss:" : "ws:";
+        const wsUrl = `${wsProtocol}//${API_BASE_URL.replace('http://', '' )}/ws`; // pas besoin des params username/userId
 
         socket = new WebSocket(wsUrl);
 

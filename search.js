@@ -1,9 +1,9 @@
 var map = L.map('map')
 map.setView([51.505, -0.09], 13);
 
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+L.tileLayer('http://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 }).addTo(map);
 
 navigator.geolocation.watchPosition(success,error);
@@ -20,7 +20,7 @@ function success(position) {
 
    // Icône personnalisée (bleue)
    const userIcon = L.icon({
-    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
+    iconUrl: 'http://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
     iconSize: [25, 41],
     iconAnchor: [12, 41]
 });
@@ -33,7 +33,7 @@ function success(position) {
         parkings.forEach(p => {
             // Icône personnalisée pour les parkings (verte)
           const parkingIcon = L.icon({
-                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
+                iconUrl: 'http://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
                 iconSize: [25, 41],
                 iconAnchor: [12, 41]
         });
@@ -68,7 +68,7 @@ async function getNearbyParkings(lat, lon) {
     `;
   
     try {
-      const response = await fetch("https://overpass-api.de/api/interpreter", {
+      const response = await fetch("http://overpass-api.de/api/interpreter", {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
@@ -94,7 +94,7 @@ async function getNearbyParkings(lat, lon) {
     event.preventDefault();
     const address = document.getElementById("address-input").value;
   
-    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${address}`)
+    fetch(`http://nominatim.openstreetmap.org/search?format=json&q=${address}`)
       .then(res => res.json())
       .then(data => {
         if (data.length > 0) {

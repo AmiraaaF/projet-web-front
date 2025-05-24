@@ -1,6 +1,6 @@
 // Assurez-vous que script.js (où API_URL est définie) est chargé avant ce script dans votre HTML.
 if (typeof API_URL === "undefined") {
-  const API_URL = "https://projet-web-back.cluster-ig3.igpolytech.fr:3002";
+  const API_URL = "http://projet-web-back.cluster-ig3.igpolytech.fr:3002";
 }
 
 document.addEventListener("DOMContentLoaded", () => {
