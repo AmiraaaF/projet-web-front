@@ -45,7 +45,7 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
     });
 }
 
-const API_URL = "http://localhost:3002";
+const API_URL = "http://projet-web-back.cluster-ig3.igpolytech.fr:3002";
 
 async function login() {
     const usernameInput = document.getElementById("username");

@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://localhost:3002";
+const API_BASE_URL = "http://projet-web-back.cluster-ig3.igpolytech.fr:3002";
 
 document.addEventListener("DOMContentLoaded", async () => {
     const chatWindow = document.getElementById("chat-window");
