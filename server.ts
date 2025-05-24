@@ -16,12 +16,9 @@ app.use(async (ctx) => {
 });
 
 
-if (Deno.args.length < 1) {
-  console.log(`Usage: $ deno run --allow-net --allow-read=./ server.ts PORT [CERT_PATH KEY_PATH]`);
-  Deno.exit();
-}
+const port = parseInt(Deno.env.get("PORT") ?? "8080");
+const options: any = { port };
 
-const options = {port: Deno.args[0]}
 
 if (Deno.args.length >= 3) {
   options.secure = true
@@ -31,4 +28,5 @@ if (Deno.args.length >= 3) {
 }
 
 console.log(`Oak static server running on port ${options.port} for the files in ${ROOT}`);
+
 await app.listen(options);
