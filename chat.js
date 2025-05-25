@@ -130,15 +130,54 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             roomListEl.innerHTML = ""; // vide la liste actuelle
 
-            // Ajout du salon général par défaut s'il n'existe pas déjà
-            let hasGeneralRoom = false;
-            roomsArray.forEach(room => {
-                if (room.name === "general") {
-                    hasGeneralRoom = true;
+            // Toujours ajouter le salon général par défaut en premier
+            const generalLi = document.createElement("li");
+            generalLi.textContent = "# Général";
+            generalLi.dataset.roomId = "general";
+            if ("general" === currentRoom) {
+                generalLi.classList.add("active-room");
+            }
+            generalLi.addEventListener("click", () => {
+                if ("general" !== currentRoom) {
+                    joinRoom("general");
                 }
             });
+            roomListEl.appendChild(generalLi);
+
+            // Ajout des salons récupérés de l'API (sauf "general" qui est déjà ajouté)
+            if (roomsArray && roomsArray.length > 0) {
+                roomsArray.forEach(room => {
+                    // Ne pas ajouter à nouveau le salon général s'il existe déjà dans l'API
+                    if (room.name === "general") return;
+                    
+                    const li = document.createElement("li");
+                    li.textContent = `# ${room.name}`;
+                    li.dataset.roomId = room.name;
+
+                    if (room.name === currentRoom) {
+                        li.classList.add("active-room");
+                    }
+
+                    li.addEventListener("click", () => {
+                        if (room.name !== currentRoom) {
+                            joinRoom(room.name);
+                        }
+                    });
+
+                    roomListEl.appendChild(li);
+                });
+            }
             
-            if (!hasGeneralRoom) {
+            // Si aucun salon n'a été créé, afficher un message dans la console
+            if (roomsArray.length === 0) {
+                console.log("Aucun salon personnalisé n'a été trouvé. Le salon Général est affiché par défaut.");
+            }
+        } catch (err) {
+            console.error("Erreur lors du chargement des salons :", err);
+            
+            // En cas d'erreur, s'assurer qu'au moins le salon général est affiché
+            const roomListEl = document.getElementById("room-list");
+            if (roomListEl && roomListEl.children.length === 0) {
                 const generalLi = document.createElement("li");
                 generalLi.textContent = "# Général";
                 generalLi.dataset.roomId = "general";
@@ -152,27 +191,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 });
                 roomListEl.appendChild(generalLi);
             }
-
-            // Ajout des salons récupérés de l'API
-            roomsArray.forEach(room => {
-                const li = document.createElement("li");
-                li.textContent = `# ${room.name}`;
-                li.dataset.roomId = room.name;
-
-                if (room.name === currentRoom) {
-                    li.classList.add("active-room");
-                }
-
-                li.addEventListener("click", () => {
-                    if (room.name !== currentRoom) {
-                        joinRoom(room.name);
-                    }
-                });
-
-                roomListEl.appendChild(li);
-            });
-        } catch (err) {
-            console.error("Erreur lors du chargement des salons :", err);
         }
     }
 
