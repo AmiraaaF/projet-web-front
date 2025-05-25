@@ -99,14 +99,62 @@ document.addEventListener("DOMContentLoaded", async () => {
     async function loadRooms() {
         try {
             const res = await fetch(`${API_BASE_URL}/rooms`, { credentials: "include" });
-            const rooms = await res.json();
+            const data = await res.json();
+            
+            // Vérification du type de la réponse et extraction du tableau de salons
+            let roomsArray = [];
+            if (Array.isArray(data)) {
+                // Si la réponse est déjà un tableau
+                roomsArray = data;
+            } else if (data && typeof data === 'object') {
+                // Si la réponse est un objet qui contient un tableau (ex: { rooms: [...] })
+                // Chercher une propriété qui pourrait contenir le tableau de salons
+                for (const key in data) {
+                    if (Array.isArray(data[key])) {
+                        roomsArray = data[key];
+                        break;
+                    }
+                }
+                
+                // Si aucun tableau n'a été trouvé mais que l'objet a une propriété 'name',
+                // c'est peut-être un salon unique
+                if (roomsArray.length === 0 && data.name) {
+                    roomsArray = [data];
+                }
+            }
+            
+            console.log("Salons récupérés:", roomsArray);
 
             const roomListEl = document.getElementById("room-list");
             if (!roomListEl) return;
 
             roomListEl.innerHTML = ""; // vide la liste actuelle
 
-            rooms.forEach(room => {
+            // Ajout du salon général par défaut s'il n'existe pas déjà
+            let hasGeneralRoom = false;
+            roomsArray.forEach(room => {
+                if (room.name === "general") {
+                    hasGeneralRoom = true;
+                }
+            });
+            
+            if (!hasGeneralRoom) {
+                const generalLi = document.createElement("li");
+                generalLi.textContent = "# Général";
+                generalLi.dataset.roomId = "general";
+                if ("general" === currentRoom) {
+                    generalLi.classList.add("active-room");
+                }
+                generalLi.addEventListener("click", () => {
+                    if ("general" !== currentRoom) {
+                        joinRoom("general");
+                    }
+                });
+                roomListEl.appendChild(generalLi);
+            }
+
+            // Ajout des salons récupérés de l'API
+            roomsArray.forEach(room => {
                 const li = document.createElement("li");
                 li.textContent = `# ${room.name}`;
                 li.dataset.roomId = room.name;
