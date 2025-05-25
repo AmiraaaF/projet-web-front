@@ -121,8 +121,8 @@ async function getNearbyParkings(lat, lon) {
         // Affichage sur la carte
         results.forEach(p => {
             const iconUrl = p.covered
-                ? "../marker-icon-yellow.png"
-                : (p.type === "private" ? "../marker-icon-red.png" : "../marker-icon-green.png");
+                ? "../marker-icon-2x-yellow.png"
+                : (p.type === "private" ? "../marker-icon-2x-red.png" : "../marker-icon-2x-green.png");
 
             const icon = L.icon({
                 iconUrl: `http://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/${iconUrl}`,
