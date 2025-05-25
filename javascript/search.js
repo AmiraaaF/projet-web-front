@@ -64,18 +64,33 @@ function error(err) {
         alert("impossible de vous géolocaliser.");
     }
 }
+// Supprime les anciens marqueurs sauf le marqueur de l'utilisateur
+map.eachLayer(layer => {
+    if (layer instanceof L.Marker && layer !== marker) {
+        map.removeLayer(layer);
+    }
+});
 
 // Fonction asynchrone pour récupérer les parkings à proximité via l'API Overpass (OpenStreetMap)
+// Nouveau getNearbyParkings avec filtres dynamiques, icônes personnalisées et affichage textuel
 async function getNearbyParkings(lat, lon) {
-    const radius = 1000; // rayon en mètres
+    const radiusKm = parseFloat(document.getElementById("radius-input")?.value || "1");
+    const radius = Math.min(Math.max(radiusKm, 0.1), 50) * 1000; // Converti km en mètres, limite entre 100m et 50km
+    const type = document.getElementById("type-filter")?.value;
 
-    // Requête Overpass pour trouver les parkings autour de la position
+    // Construction du filtre Overpass
+    let overpassFilter = '["amenity"="parking"]';
+    if (type === "public") overpassFilter += '["access"="public"]';
+    else if (type === "private") overpassFilter += '["access"="private"]';
+    else if (type === "covered") overpassFilter += '["covered"="yes"]';
+    else if (type === "outdoor") overpassFilter += '["covered"!="yes"]';
+
     const query = `
       [out:json];
       (
-        node["amenity"="parking"](around:${radius},${lat},${lon});
-        way["amenity"="parking"](around:${radius},${lat},${lon});
-        relation["amenity"="parking"](around:${radius},${lat},${lon});
+        node${overpassFilter}(around:${radius},${lat},${lon});
+        way${overpassFilter}(around:${radius},${lat},${lon});
+        relation${overpassFilter}(around:${radius},${lat},${lon});
       );
       out center;
     `;
@@ -91,17 +106,57 @@ async function getNearbyParkings(lat, lon) {
 
         const data = await response.json();
 
-        // Transforme les résultats en objets avec lat, lon et nom
-        return data.elements.map(p => ({
-            lat: p.lat || p.center?.lat,
-            lon: p.lon || p.center?.lon,
-            name: p.tags?.name || "Parking OSM"
-        })).filter(p => p.lat && p.lon);
+        const results = data.elements.map(p => {
+            const lat = p.lat || p.center?.lat;
+            const lon = p.lon || p.center?.lon;
+            return {
+                lat,
+                lon,
+                name: p.tags?.name || "Parking OSM",
+                type: p.tags?.access || "inconnu",
+                covered: p.tags?.covered === "yes"
+            };
+        }).filter(p => p.lat && p.lon);
+
+        // Affichage sur la carte
+        results.forEach(p => {
+            const iconUrl = p.covered
+                ? "../marker-icon-yellow.png"
+                : (p.type === "private" ? "../marker-icon-red.png" : "../marker-icon-green.png");
+
+            const icon = L.icon({
+                iconUrl: `http://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/${iconUrl}`,
+                iconSize: [25, 41],
+                iconAnchor: [12, 41]
+            });
+
+            L.marker([p.lat, p.lon], { icon })
+                .addTo(map)
+                .bindPopup(`<strong>${p.name}</strong><br>Type : ${p.type}<br>Couvert : ${p.covered ? "Oui" : "Non"}`);
+        });
+
+        // Affichage dans les résultats texte
+        const listContainer = document.getElementById("results-list");
+        listContainer.innerHTML = "";
+        results.forEach(p => {
+            const div = document.createElement("div");
+            div.className = "result-card";
+            div.innerHTML = `
+                <h4>${p.name}</h4>
+                <p>Type : ${p.type}</p>
+                <p>Couvert : ${p.covered ? "Oui" : "Non"}</p>
+                <p>Position : ${p.lat.toFixed(5)}, ${p.lon.toFixed(5)}</p>
+            `;
+            listContainer.appendChild(div);
+        });
+
+        return results;
     } catch (err) {
         console.error("Erreur Overpass:", err);
         return [];
     }
 }
+
 
 // Gestion du formulaire de recherche d'adresse
 document.getElementById("search-form").addEventListener("submit", (event) => {
@@ -119,11 +174,8 @@ document.getElementById("search-form").addEventListener("submit", (event) => {
 
                 // Affiche les parkings à proximité de l'adresse recherchée
                 getNearbyParkings(lat, lon).then(parkings => {
-                    parkings.forEach(p => {
-                        L.marker([p.lat, p.lon])
-                            .addTo(map)
-                            .bindPopup(p.name);
-                    });
+                    getNearbyParkings(lat, lon);
+
                 });
             } else {
                 alert("Adresse non trouvée");
@@ -135,3 +187,11 @@ document.getElementById("search-form").addEventListener("submit", (event) => {
         });
 });
 
+document.getElementById("apply-filters-btn").addEventListener("click", () => {
+    if (marker) {
+        const { lat, lng } = marker.getLatLng();
+        getNearbyParkings(lat, lng);
+    } else {
+        alert("Veuillez activer la géolocalisation d'abord.");
+    }
+});
