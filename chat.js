@@ -95,6 +95,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         activeUsers[roomId][userId] = username;
         updateUserListForRoom(roomId, activeUsers[roomId]);
     }
+
     async function loadRooms() {
         try {
             const res = await fetch(`${API_BASE_URL}/rooms`, { credentials: "include" });
@@ -146,20 +147,21 @@ document.addEventListener("DOMContentLoaded", async () => {
             // Ajout des salons récupérés de l'API (sauf "general" qui est déjà ajouté)
             if (roomsArray && roomsArray.length > 0) {
                 roomsArray.forEach(room => {
-                    // Ne pas ajouter à nouveau le salon général s'il existe déjà dans l'API
-                    if (room.name === "general") return;
+                    // Assurez-vous que chaque élément de room est un objet avec une propriété 'name'
+                    const roomName = Array.isArray(room) ? room[1] : room.name;
+                    if (roomName === "general") return;
 
                     const li = document.createElement("li");
-                    li.textContent = `# ${room.name}`;
-                    li.dataset.roomId = room.name;
+                    li.textContent = `# ${roomName}`;
+                    li.dataset.roomId = roomName;
 
-                    if (room.name === currentRoom) {
+                    if (roomName === currentRoom) {
                         li.classList.add("active-room");
                     }
 
                     li.addEventListener("click", () => {
-                        if (room.name !== currentRoom) {
-                            joinRoom(room.name);
+                        if (roomName !== currentRoom) {
+                            joinRoom(roomName);
                         }
                     });
 
@@ -193,8 +195,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-
-
     function removeUserFromList(roomId, userId) {
         if (activeUsers[roomId]) {
             delete activeUsers[roomId][userId];
@@ -221,9 +221,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (response.ok) {
                 currentUser = await response.json();
                 console.log("currentUser après /profile :", currentUser);
-                await loadRooms();          
-                await loadChatHistory(); 
-                connectWebSocket();        
+                await loadRooms();
+                await loadChatHistory();
+                connectWebSocket();
 
             } else {
                 displayChatMessage("error", "Vous devez être connecté pour utiliser le chat. Redirection...");
@@ -365,31 +365,31 @@ document.addEventListener("DOMContentLoaded", async () => {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ name: roomName })
                 });
-                
+
                 console.log("Statut de la réponse:", res.status);
                 const data = await res.json();
                 console.log("Données reçues après création:", data);
-                
+
                 if (res.ok) {
                     alert("Salon créé !");
                     roomNameInput.value = "";
-                    
+
                     // Ajout manuel du salon à la liste si l'API ne le renvoie pas lors du rechargement
                     const roomListEl = document.getElementById("room-list");
                     if (roomListEl) {
                         const newRoomLi = document.createElement("li");
                         newRoomLi.textContent = `# ${roomName}`;
                         newRoomLi.dataset.roomId = roomName;
-                        
+
                         newRoomLi.addEventListener("click", () => {
                             if (roomName !== currentRoom) {
                                 joinRoom(roomName);
                             }
                         });
-                        
+
                         roomListEl.appendChild(newRoomLi);
                     }
-                    
+
                     // Rechargement des salons depuis l'API
                     try {
                         await loadRooms();
