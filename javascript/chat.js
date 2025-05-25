@@ -1,6 +1,8 @@
 const API_BASE_URL = "http://projet-web-back.cluster-ig3.igpolytech.fr:3002";
 
+// Quand la page est chargée, on initialise tout le chat
 document.addEventListener("DOMContentLoaded", async () => {
+    // Récupération des éléments du DOM
     const chatWindow = document.getElementById("chat-window");
     const messageInput = document.getElementById("chat-message-input");
     const sendMessageBtn = document.getElementById("send-chat-message-btn");
@@ -11,9 +13,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     let socket;
     let currentUser = null;
-    let currentRoom = "general"; // Default room
-    let activeUsers = {}; // roomId: { userId: username }
+    let currentRoom = "general"; // Salon par défaut
+    let activeUsers = {}; // Liste des utilisateurs actifs par salon
 
+    // Affiche un message d'erreur ou de succès dans le chat
     function displayChatMessage(type, message, container = messageContainerChat) {
         if (container) {
             container.innerHTML = `<div class="${type === "error" ? "error-message" : "success-message"}">${message}</div>`;
@@ -21,6 +24,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
+    // Affiche un message système dans la fenêtre de chat
     function displaySystemMessage(msg, isError = false) {
         const div = document.createElement("div");
         div.className = `system-message ${isError ? 'error' : ''}`;
@@ -29,8 +33,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         chatWindow.scrollTop = chatWindow.scrollHeight;
     }
 
+    // Ajoute un message dans la fenêtre de chat
     function appendMessage(data) {
-        console.log("currentUser dans appendMessage:", currentUser);
         const div = document.createElement("div");
         div.className = "chat-message";
         div.innerHTML = `
@@ -40,6 +44,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         chatWindow.appendChild(div);
         chatWindow.scrollTop = chatWindow.scrollHeight;
 
+        // Si l'utilisateur est admin, ajoute le bouton de suppression
         if (currentUser?.role === "admin") {
             const deleteBtn = div.querySelector(".delete-message-btn");
             if (deleteBtn) {
@@ -70,6 +75,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
+    // Charge l'historique des messages pour un salon donné
     async function loadChatHistory(roomId) {
         try {
             const res = await fetch(`${API_BASE_URL}/api/messages?room_id=${roomId}`, {
@@ -91,47 +97,41 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
+    // Ajoute un utilisateur à la liste des utilisateurs actifs d'un salon
     function addUserToList(roomId, userId, username) {
         if (!activeUsers[roomId]) activeUsers[roomId] = {};
         activeUsers[roomId][userId] = username;
         updateUserListForRoom(roomId, activeUsers[roomId]);
     }
 
+    // Charge la liste des salons depuis l'API et met à jour l'affichage
     async function loadRooms() {
         try {
             const res = await fetch(`${API_BASE_URL}/rooms`, { credentials: "include" });
             const data = await res.json();
 
-            // Vérification du type de la réponse et extraction du tableau de salons
+            // Vérifie le format de la réponse et extrait le tableau de salons
             let roomsArray = [];
             if (Array.isArray(data)) {
-                // Si la réponse est déjà un tableau
                 roomsArray = data;
             } else if (data && typeof data === 'object') {
-                // Si la réponse est un objet qui contient un tableau (ex: { rooms: [...] })
-                // Chercher une propriété qui pourrait contenir le tableau de salons
                 for (const key in data) {
                     if (Array.isArray(data[key])) {
                         roomsArray = data[key];
                         break;
                     }
                 }
-
-                // Si aucun tableau n'a été trouvé mais que l'objet a une propriété 'name',
-                // c'est peut-être un salon unique
                 if (roomsArray.length === 0 && data.name) {
                     roomsArray = [data];
                 }
             }
 
-            console.log("Salons récupérés:", roomsArray);
-
             const roomListEl = document.getElementById("room-list");
             if (!roomListEl) return;
 
-            roomListEl.innerHTML = ""; // vide la liste actuelle
+            roomListEl.innerHTML = ""; // Vide la liste actuelle
 
-            // Toujours ajouter le salon général par défaut en premier
+            // Ajoute le salon général par défaut
             const generalLi = document.createElement("li");
             generalLi.textContent = "# Général";
             generalLi.dataset.roomId = "general";
@@ -145,10 +145,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             });
             roomListEl.appendChild(generalLi);
 
-            // Ajout des salons récupérés de l'API (sauf "general" qui est déjà ajouté)
+            // Ajoute les autres salons récupérés de l'API
             if (roomsArray && roomsArray.length > 0) {
                 roomsArray.forEach(room => {
-                    // Assurez-vous que chaque élément de room est un objet avec une propriété 'name'
                     const roomName = Array.isArray(room) ? room[1] : room.name;
                     if (roomName === "general") return;
 
@@ -170,14 +169,13 @@ document.addEventListener("DOMContentLoaded", async () => {
                 });
             }
 
-            // Si aucun salon n'a été créé, afficher un message dans la console
             if (roomsArray.length === 0) {
                 console.log("Aucun salon personnalisé n'a été trouvé. Le salon Général est affiché par défaut.");
             }
         } catch (err) {
             console.error("Erreur lors du chargement des salons :", err);
 
-            // En cas d'erreur, s'assurer qu'au moins le salon général est affiché
+            // En cas d'erreur, affiche au moins le salon général
             const roomListEl = document.getElementById("room-list");
             if (roomListEl && roomListEl.children.length === 0) {
                 const generalLi = document.createElement("li");
@@ -196,6 +194,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
+    // Retire un utilisateur de la liste des utilisateurs actifs d'un salon
     function removeUserFromList(roomId, userId) {
         if (activeUsers[roomId]) {
             delete activeUsers[roomId][userId];
@@ -203,6 +202,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
+    // Met à jour l'affichage de la liste des utilisateurs pour un salon donné
     function updateUserListForRoom(roomId, users) {
         userList.innerHTML = "";
         if (!users) return;
@@ -213,6 +213,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
+    // Récupère les infos de l'utilisateur connecté et initialise le chat
     async function fetchChatUser() {
         try {
             const response = await fetch(`${API_BASE_URL}/profile`, {
@@ -221,11 +222,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             });
             if (response.ok) {
                 currentUser = await response.json();
-                console.log("currentUser après /profile :", currentUser);
                 await loadRooms();
-                await loadChatHistory(currentRoom); // Charger l'historique pour le salon actuel
+                await loadChatHistory(currentRoom); // Charge l'historique du salon actuel
                 connectWebSocket();
-
             } else {
                 displayChatMessage("error", "Vous devez être connecté pour utiliser le chat. Redirection...");
                 setTimeout(() => { window.location.href = "/login.html"; }, 2000);
@@ -237,25 +236,24 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
+    // Ouvre une connexion WebSocket pour le chat en temps réel
     function connectWebSocket() {
         if (!currentUser) return;
 
         const wsProtocol = location.protocol === "https:" ? "wss:" : "ws:";
-        const wsUrl = `${wsProtocol}//${API_BASE_URL.replace('http://', '' )}/ws`; // pas besoin des params username/userId
+        const wsUrl = `${wsProtocol}//${API_BASE_URL.replace('http://', '' )}/ws`;
 
         socket = new WebSocket(wsUrl);
 
         socket.onopen = () => {
-            console.log("WebSocket connected.");
             displaySystemMessage("Connecté au chat.");
             joinRoom(currentRoom);
         };
 
+        // Gère la réception des messages WebSocket
         socket.onmessage = (event) => {
             try {
                 const messageData = JSON.parse(event.data);
-                console.log("Reçu :", messageData);
-
                 switch (messageData.type) {
                     case "chat_message":
                         if (messageData.room_id === currentRoom) appendMessage(messageData);
@@ -292,6 +290,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         };
     }
 
+    // Permet de rejoindre un salon (room)
     function joinRoom(roomId) {
         if (socket && socket.readyState === WebSocket.OPEN) {
             currentRoom = roomId;
@@ -310,11 +309,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             userList.innerHTML = "";
 
-            // Charger l'historique des messages pour le nouveau salon
+            // Charge l'historique des messages pour le nouveau salon
             loadChatHistory(roomId);
         }
     }
 
+    // Envoie un message dans le salon courant via WebSocket
     function sendMessage() {
         const message = messageInput.value.trim();
         if (!message || !socket || socket.readyState !== WebSocket.OPEN) return;
@@ -330,6 +330,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         messageInput.value = "";
     }
 
+    // Gestion des événements d'envoi de message
     if (sendMessageBtn) {
         sendMessageBtn.addEventListener("click", sendMessage);
     }
@@ -343,6 +344,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
+    // Gestion du clic sur la liste des salons
     if (roomList) {
         roomList.addEventListener("click", (e) => {
             if (e.target.tagName === "LI" && e.target.dataset.roomId) {
@@ -354,6 +356,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
+    // Gestion de la création d'un nouveau salon
     if (createRoomForm) {
         createRoomForm.addEventListener("submit", async (e) => {
             e.preventDefault();
@@ -361,7 +364,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             const roomName = roomNameInput.value.trim();
             if (!roomName) return alert("Le nom du salon ne peut pas être vide !");
             try {
-                console.log("Tentative de création du salon:", roomName);
                 const res = await fetch(`${API_BASE_URL}/rooms`, {
                     method: "POST",
                     credentials: "include",
@@ -369,15 +371,13 @@ document.addEventListener("DOMContentLoaded", async () => {
                     body: JSON.stringify({ name: roomName })
                 });
 
-                console.log("Statut de la réponse:", res.status);
                 const data = await res.json();
-                console.log("Données reçues après création:", data);
 
                 if (res.ok) {
                     alert("Salon créé !");
                     roomNameInput.value = "";
 
-                    // Ajout manuel du salon à la liste si l'API ne le renvoie pas lors du rechargement
+                    // Ajoute le salon à la liste
                     const roomListEl = document.getElementById("room-list");
                     if (roomListEl) {
                         const newRoomLi = document.createElement("li");
@@ -393,10 +393,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                         roomListEl.appendChild(newRoomLi);
                     }
 
-                    // Rechargement des salons depuis l'API
+                    // Recharge la liste des salons depuis l'API
                     try {
                         await loadRooms();
-                        console.log("Liste des salons rechargée après création");
                     } catch (loadErr) {
                         console.error("Erreur lors du rechargement des salons:", loadErr);
                     }
@@ -410,10 +409,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
-    // Lancement
+    // Lancement de la récupération de l'utilisateur et de l'initialisation du chat
     fetchChatUser();
 
-    // GSAP animation (optionnel si utilisé)
+    // Animation GSAP (optionnel)
     if (typeof gsap !== "undefined") {
         gsap.from(".chat-sidebar", { duration: 0.7, x: -50, opacity: 0, ease: "power2.out", delay: 0.2 });
         gsap.from(".chat-main", { duration: 0.7, x: 50, opacity: 0, ease: "power2.out", delay: 0.3 });
@@ -421,6 +420,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 });
 
+// Fonction utilitaire pour afficher un salon dans la liste (utilisée pour l'admin)
 function appendRoom(room) {
     const div = document.createElement("div");
     div.className = "chat-room";

@@ -1,11 +1,13 @@
-// Assurez-vous que script.js (où API_URL est définie) est chargé avant ce script dans votre HTML.
+// Vérifie si API_URL est déjà définie (par exemple dans script.js), sinon la définit ici
 if (typeof API_URL === "undefined") {
   const API_URL = "http://projet-web-back.cluster-ig3.igpolytech.fr:3002";
 }
 
+// Quand la page est chargée, lance la vérification utilisateur et le chargement des posts
 document.addEventListener("DOMContentLoaded", () => {
     checkUserAndLoadPosts();
     
+    // Ajoute un écouteur sur le formulaire de création de post
     const postForm = document.getElementById("new-post-form");
     if (postForm) {
         postForm.addEventListener("submit", (event) => {
@@ -15,6 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
+// Vérifie si l'utilisateur est connecté (appel à /profile) et affiche/masque le formulaire de post
 async function checkUserAndLoadPosts() {
     try {
         if (typeof API_URL === "undefined") {
@@ -31,22 +34,26 @@ async function checkUserAndLoadPosts() {
         const loginMessage = document.getElementById("login-message");
 
         if (response.ok) {
+            // Utilisateur connecté : affiche le formulaire, cache le message de connexion
             if (newPostForm) newPostForm.classList.remove("hidden");
             if (loginMessage) loginMessage.classList.add("hidden");
         } else {
+            // Utilisateur non connecté : cache le formulaire, affiche le message de connexion
             if (newPostForm) newPostForm.classList.add("hidden");
             if (loginMessage) loginMessage.classList.remove("hidden");
         }
     } catch (error) {
+        // En cas d'erreur réseau, cache le formulaire et affiche le message de connexion
         console.error("Erreur lors de la vérification de l'utilisateur pour le blog:", error);
         const newPostForm = document.getElementById("new-post-form");
         const loginMessage = document.getElementById("login-message");
         if (newPostForm) newPostForm.classList.add("hidden");
         if (loginMessage) loginMessage.classList.remove("hidden");
     }
-    loadPosts();
+    loadPosts(); // Charge les posts du blog dans tous les cas
 }
 
+// Charge et affiche tous les posts du blog
 async function loadPosts() {
   const container = document.getElementById("posts-container");
   try {
@@ -54,10 +61,11 @@ async function loadPosts() {
     const res = await fetch(`${API_URL}/api/posts`, {
       credentials: "include",
       mode: "cors"
-  });
+    });
     const responseText = await res.text();
 
     if (!res.ok) {
+        // Gestion des erreurs serveur ou API
         let errorMsg = `Erreur serveur ${res.status}.`;
         try {
             const errorData = JSON.parse(responseText);
@@ -74,6 +82,7 @@ async function loadPosts() {
     if (!container) return;
     container.innerHTML = "";
 
+    // Affiche chaque post dans le conteneur
     if (posts && posts.length > 0) {
         posts.forEach(post => {
           const div = document.createElement("div");
@@ -96,7 +105,7 @@ async function loadPosts() {
           `;
           container.appendChild(div);
 
-          // Ajouter l'écouteur d'événement pour le bouton de suppression si l'utilisateur est admin
+          // Ajoute l'écouteur pour la suppression si l'utilisateur est admin
           if (post.current_user_role === "admin") {
             const deleteBtn = div.querySelector(".delete-post-btn");
             if (deleteBtn) {
@@ -108,11 +117,14 @@ async function loadPosts() {
         container.innerHTML = "<p>Aucun post à afficher pour le moment.</p>";
     }
   } catch (err) {
+    // Affiche une erreur si le chargement échoue
     console.error("Erreur chargement posts:", err);
     if (container) container.innerHTML = `<p>Erreur lors du chargement des posts: ${err.message}</p>`;
   }
 }
 
+// Soumet un nouveau post au serveur (formulaire)
+// Vérifie les champs, envoie la requête POST, affiche un message et recharge les posts
 async function submitPost() {
   const titleInput = document.getElementById("post-title");
   const contentInput = document.getElementById("post-content");
@@ -155,18 +167,21 @@ async function submitPost() {
         throw new Error(errorMsg);
     }
     
+    // Réinitialise le formulaire et affiche un message de succès
     titleInput.value = "";
     contentInput.value = "";
     window.displayMessage("success", (result && result.message) || "Post publié avec succès !", "message-container-blog"); 
-    loadPosts(); 
+    loadPosts(); // Recharge la liste des posts
 
   } catch (err) {
+    // Affiche une erreur si la publication échoue
     console.error("Erreur post message :", err);
     window.displayMessage("error", `Erreur : ${err.message}. Assurez-vous d'être connecté et que le serveur fonctionne correctement.`, "message-container-blog");
   }
 }
 
-// Fonction pour supprimer un post
+// Fonction pour supprimer un post (réservé admin)
+// Demande confirmation, envoie la requête DELETE, affiche un message et recharge les posts
 async function deletePost(postId) {
   if (!confirm("Êtes-vous sûr de vouloir supprimer ce post ?")) {
     return;
@@ -192,12 +207,13 @@ async function deletePost(postId) {
   }
 }
 
+// Fonction utilitaire pour afficher des messages de succès/erreur dans le blog
 if (typeof window.displayMessage !== 'function') {
     window.displayMessage = function(type, message, containerId) {
         const container = document.getElementById(containerId);
         if (container) {
             container.innerHTML = `<div class="message ${type}">${message}</div>`;
-            setTimeout(() => { container.innerHTML = ""; }, 7000); // Augmenté le délai pour les erreurs
+            setTimeout(() => { container.innerHTML = ""; }, 7000); // Augmente le délai pour les erreurs
         } else {
             alert(`${type.toUpperCase()}: ${message}`);
         }

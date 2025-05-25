@@ -1,17 +1,22 @@
 // GSAP Animations for the homepage
+// Vérifie que GSAP et ScrollTrigger sont chargés avant d'exécuter les animations
 if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
     gsap.registerPlugin(ScrollTrigger);
     document.addEventListener('DOMContentLoaded', () => {
+        // Animation du titre principal
         if (document.querySelector(".hero-text h1")) {
             gsap.from(".hero-text h1", { duration: 1, y: -50, opacity: 0, ease: "power3.out" });
             gsap.from(".hero-text p", { duration: 1, y: -30, opacity: 0, delay: 0.3, ease: "power3.out" });
         }
+        // Animation du bouton d'appel à l'action
         if (document.querySelector(".cta-button")) {
             gsap.from(".cta-button", { duration: 1, scale: 0.5, opacity: 0, delay: 0.6, ease: "elastic.out(1, 0.5)" });
         }
+        // Animation de l'image principale
         if (document.getElementById("hero-main-image")) {
             gsap.from("#hero-main-image", { duration: 1.5, x: 100, opacity: 0, delay: 0.5, ease: "power3.out"});
         }
+        // Animation des cartes de fonctionnalités
         gsap.utils.toArray(".feature-card").forEach((card, i) => {
             gsap.from(card, {
                 duration: 0.8,
@@ -22,6 +27,7 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
                 delay: i * 0.2
             });
         });
+        // Animation des étapes
         gsap.utils.toArray(".step").forEach((step, i) => {
             gsap.from(step, {
                 duration: 0.7,
@@ -32,6 +38,7 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
                 delay: i * 0.25
             });
         });
+        // Animation de la flèche des étapes
         if (document.querySelector(".step-arrow")) {
             gsap.from(".step-arrow", {
                 duration: 0.7,
@@ -45,8 +52,10 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
     });
 }
 
+// URL de l'API backend
 const API_URL = "http://projet-web-back.cluster-ig3.igpolytech.fr:3002";
 
+// Fonction de connexion utilisateur
 async function login() {
     const usernameInput = document.getElementById("username");
     const passwordInput = document.getElementById("password");
@@ -74,6 +83,7 @@ async function login() {
     }
 }
 
+// Fonction d'inscription utilisateur
 async function register() {
     const usernameInput = document.getElementById("username");
     const passwordInput = document.getElementById("password");
@@ -101,6 +111,7 @@ async function register() {
     }
 }
 
+// Fonction de déconnexion utilisateur
 async function logout() {
     try {
         const response = await fetch(`${API_URL}/logout`, { 
@@ -126,6 +137,7 @@ async function logout() {
     }
 }
 
+// Met à jour les liens d'authentification dans le header selon l'état de connexion
 async function updateAuthLinks() {
   const authContainer = document.getElementById("auth-links");
   if (!authContainer) {
@@ -134,7 +146,7 @@ async function updateAuthLinks() {
   }
 
   try {
-    const res = await fetch(`${API_URL}/profile`, { // ou /verify_cookie
+    const res = await fetch(`${API_URL}/profile`, {
       method: "GET",
       credentials: "include",
       mode: "cors"
@@ -152,12 +164,12 @@ async function updateAuthLinks() {
           </div>
         </div>
       `;
-      // Ajouter l'écouteur d'événement pour le menu déroulant
+      // Ajoute l'écouteur d'événement pour le menu déroulant
       const toggle = document.getElementById("profile-dropdown-toggle");
       const content = document.getElementById("profile-dropdown-content");
       if (toggle && content) {
         toggle.addEventListener("click", (event) => {
-          event.stopPropagation(); // Empêche la propagation au document
+          event.stopPropagation();
           content.classList.toggle("show");
         });
       }
@@ -174,18 +186,18 @@ async function updateAuthLinks() {
   }
 }
 
-// Fermer le menu déroulant si l'utilisateur clique en dehors
+// Ferme le menu déroulant du profil si l'utilisateur clique en dehors
 document.addEventListener("click", function(event) {
   const dropdownContent = document.getElementById("profile-dropdown-content");
   const dropdownToggle = document.getElementById("profile-dropdown-toggle");
   if (dropdownContent && dropdownContent.classList.contains('show')) {
-    // Vérifier si le clic n'est pas sur le toggle ni dans le contenu du dropdown
     if (dropdownToggle && !dropdownToggle.contains(event.target) && !dropdownContent.contains(event.target)) {
       dropdownContent.classList.remove('show');
     }
   }
 });
 
+// Charge un aperçu des derniers posts du blog sur la page d'accueil
 function loadBlogPreview() {
     const container = document.getElementById("blog-preview-container");
     if (!container) return;
@@ -216,19 +228,22 @@ function loadBlogPreview() {
       });
 }
   
+// Initialisation au chargement de la page
 document.addEventListener("DOMContentLoaded", () => {
     console.log("DOM entièrement chargé et analysé");
     updateAuthLinks(); 
     if (document.getElementById("blog-preview-container")) {
         loadBlogPreview();
     }
+    // Gestion du bouton de connexion
     const loginButtonOnPage = document.querySelector("form button[onclick='login()']");
     if (loginButtonOnPage) {
         loginButtonOnPage.addEventListener("click", function(event) {
-            event.preventDefault(); // Empêcher la soumission par défaut du formulaire si le bouton est dans un form
+            event.preventDefault();
             login();
         });
     }
+    // Gestion du bouton d'inscription
     const registerButtonOnPage = document.querySelector("form button[onclick='register()']");
     if (registerButtonOnPage) {
         registerButtonOnPage.addEventListener("click", function(event) {
@@ -238,6 +253,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
+// Fonction utilitaire pour afficher des messages de succès/erreur/info dans un conteneur donné
 window.displayMessage = function (type, message, containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -245,6 +261,7 @@ window.displayMessage = function (type, message, containerId) {
     setTimeout(() => container.innerHTML = "", 5000);
 };
 
+// Gestion du menu burger pour la navigation mobile
 const burger = document.querySelector('.burger');
 const nav = document.querySelector('.nav-links');
 const navLinks = document.querySelectorAll('.nav-links li');
