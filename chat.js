@@ -70,13 +70,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-    async function loadChatHistory() {
+    async function loadChatHistory(roomId) {
         try {
-            const res = await fetch(`${API_BASE_URL}/api/messages`, {
+            const res = await fetch(`${API_BASE_URL}/api/messages?room_id=${roomId}`, {
                 credentials: "include"
             });
 
             const messages = await res.json();
+            chatWindow.innerHTML = ""; // Efface les messages actuels
             messages.forEach(msg => {
                 appendMessage({
                     id: msg.id,
@@ -222,7 +223,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 currentUser = await response.json();
                 console.log("currentUser après /profile :", currentUser);
                 await loadRooms();
-                await loadChatHistory();
+                await loadChatHistory(currentRoom); // Charger l'historique pour le salon actuel
                 connectWebSocket();
 
             } else {
@@ -301,7 +302,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 username: currentUser.username
             }));
 
-            // chatWindow.innerHTML = "";
             displaySystemMessage(`Salon rejoint : #${roomId}`);
 
             document.querySelectorAll("#room-list li").forEach(li => li.classList.remove("active-room"));
@@ -309,6 +309,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (activeRoom) activeRoom.classList.add("active-room");
 
             userList.innerHTML = "";
+
+            // Charger l'historique des messages pour le nouveau salon
+            loadChatHistory(roomId);
         }
     }
 
