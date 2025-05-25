@@ -7,7 +7,7 @@ app.use(async (ctx) => {
   try {
     await ctx.send({
       root: ROOT,
-      index: "index.html",
+      index: "./html/index.html",
     });
   } catch {
     ctx.response.status = 404;
