@@ -358,21 +358,50 @@ document.addEventListener("DOMContentLoaded", async () => {
             const roomName = roomNameInput.value.trim();
             if (!roomName) return alert("Le nom du salon ne peut pas être vide !");
             try {
+                console.log("Tentative de création du salon:", roomName);
                 const res = await fetch(`${API_BASE_URL}/rooms`, {
                     method: "POST",
                     credentials: "include",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ name: roomName })
                 });
+                
+                console.log("Statut de la réponse:", res.status);
                 const data = await res.json();
+                console.log("Données reçues après création:", data);
+                
                 if (res.ok) {
                     alert("Salon créé !");
                     roomNameInput.value = "";
-                    await loadRooms();
+                    
+                    // Ajout manuel du salon à la liste si l'API ne le renvoie pas lors du rechargement
+                    const roomListEl = document.getElementById("room-list");
+                    if (roomListEl) {
+                        const newRoomLi = document.createElement("li");
+                        newRoomLi.textContent = `# ${roomName}`;
+                        newRoomLi.dataset.roomId = roomName;
+                        
+                        newRoomLi.addEventListener("click", () => {
+                            if (roomName !== currentRoom) {
+                                joinRoom(roomName);
+                            }
+                        });
+                        
+                        roomListEl.appendChild(newRoomLi);
+                    }
+                    
+                    // Rechargement des salons depuis l'API
+                    try {
+                        await loadRooms();
+                        console.log("Liste des salons rechargée après création");
+                    } catch (loadErr) {
+                        console.error("Erreur lors du rechargement des salons:", loadErr);
+                    }
                 } else {
                     alert(data.error || "Erreur lors de la création du salon");
                 }
             } catch (err) {
+                console.error("Erreur lors de la création du salon:", err);
                 alert("Erreur réseau");
             }
         });
