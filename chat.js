@@ -96,6 +96,39 @@ document.addEventListener("DOMContentLoaded", async () => {
         updateUserListForRoom(roomId, activeUsers[roomId]);
     }
 
+    async function loadRooms() {
+        try {
+            const res = await fetch(`${API_BASE_URL}/rooms`, { credentials: "include" });
+            const rooms = await res.json();
+
+            const roomListEl = document.getElementById("room-list");
+            if (!roomListEl) return;
+
+            roomListEl.innerHTML = ""; // vide la liste actuelle
+
+            rooms.forEach(room => {
+                const li = document.createElement("li");
+                li.textContent = `# ${room.name}`;
+                li.dataset.roomId = room.name;
+
+                if (room.name === currentRoom) {
+                    li.classList.add("active-room");
+                }
+
+                li.addEventListener("click", () => {
+                    if (room.name !== currentRoom) {
+                        joinRoom(room.name);
+                    }
+                });
+
+                roomListEl.appendChild(li);
+            });
+        } catch (err) {
+            console.error("Erreur lors du chargement des salons :", err);
+        }
+    }
+
+
     function removeUserFromList(roomId, userId) {
         if (activeUsers[roomId]) {
             delete activeUsers[roomId][userId];
@@ -122,8 +155,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (response.ok) {
                 currentUser = await response.json();
                 console.log("currentUser après /profile :", currentUser);
-                await loadChatHistory();
-                connectWebSocket();
+                await loadRooms();          
+                await loadChatHistory(); 
+                connectWebSocket();        
+
             } else {
                 displayChatMessage("error", "Vous devez être connecté pour utiliser le chat. Redirection...");
                 setTimeout(() => { window.location.href = "/login.html"; }, 2000);
@@ -267,7 +302,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 if (res.ok) {
                     alert("Salon créé !");
                     roomNameInput.value = "";
-                    // Recharge la liste des salons ici si besoin
+                    await loadRooms();
                 } else {
                     alert(data.error || "Erreur lors de la création du salon");
                 }
