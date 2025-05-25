@@ -1,3 +1,4 @@
+
 const API_BASE_URL = "http://projet-web-back.cluster-ig3.igpolytech.fr:3002";
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -11,8 +12,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     let socket;
     let currentUser = null;
-    let currentRoom = "general"; // Default room
+    let currentRoomId = 1; // ID numérique du salon par défaut (à adapter selon votre base)
+    let currentRoomName = "general"; // Nom du salon pour l'affichage
     let activeUsers = {}; // roomId: { userId: username }
+    let roomsMap = {}; // Stocke la correspondance entre les noms de salons et leurs IDs
 
     function displayChatMessage(type, message, container = messageContainerChat) {
         if (container) {
@@ -30,11 +33,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     function appendMessage(data) {
-        console.log("currentUser dans appendMessage:", currentUser);
+        console.log("Ajout message:", data);
         const div = document.createElement("div");
         div.className = "chat-message";
         div.innerHTML = `
-        <strong>${data.username}:</strong> ${data.message}
+        <strong>${data.username}:</strong> ${data.message || data.content}
         ${currentUser?.role === "admin" ? `<button class="delete-message-btn" data-id="${data.id}">🗑️</button>` : ""}
     `;
         chatWindow.appendChild(div);
@@ -72,22 +75,31 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     async function loadChatHistory(roomId) {
         try {
+            console.log(`Chargement de l'historique pour le salon ID: ${roomId}`);
             const res = await fetch(`${API_BASE_URL}/api/messages?room_id=${roomId}`, {
                 credentials: "include"
             });
 
             const messages = await res.json();
+            console.log(`${messages.length} messages récupérés pour le salon ID ${roomId}:`, messages);
+            
             chatWindow.innerHTML = ""; // Efface les messages actuels
-            messages.forEach(msg => {
-                appendMessage({
-                    id: msg.id,
-                    username: msg.username,
-                    message: msg.content,
-                    created_at: msg.created_at
+            
+            if (messages.length === 0) {
+                displaySystemMessage(`Aucun message dans ce salon. Soyez le premier à écrire !`);
+            } else {
+                messages.forEach(msg => {
+                    appendMessage({
+                        id: msg.id,
+                        username: msg.username,
+                        content: msg.content,
+                        created_at: msg.created_at
+                    });
                 });
-            });
+            }
         } catch (error) {
-            console.error("Erreur lors du chargement de l'historique :", error);
+            console.error(`Erreur lors du chargement de l'historique pour le salon ID ${roomId}:`, error);
+            displaySystemMessage("Erreur lors du chargement des messages", true);
         }
     }
 
@@ -101,98 +113,82 @@ document.addEventListener("DOMContentLoaded", async () => {
         try {
             const res = await fetch(`${API_BASE_URL}/rooms`, { credentials: "include" });
             const data = await res.json();
+            console.log("Données brutes des salons:", data);
 
-            // Vérification du type de la réponse et extraction du tableau de salons
+            // Réinitialiser la carte des salons
+            roomsMap = {};
+            
+            // Extraire les salons de la réponse
             let roomsArray = [];
             if (Array.isArray(data)) {
-                // Si la réponse est déjà un tableau
                 roomsArray = data;
-            } else if (data && typeof data === 'object') {
-                // Si la réponse est un objet qui contient un tableau (ex: { rooms: [...] })
-                // Chercher une propriété qui pourrait contenir le tableau de salons
-                for (const key in data) {
-                    if (Array.isArray(data[key])) {
-                        roomsArray = data[key];
-                        break;
-                    }
-                }
-
-                // Si aucun tableau n'a été trouvé mais que l'objet a une propriété 'name',
-                // c'est peut-être un salon unique
-                if (roomsArray.length === 0 && data.name) {
-                    roomsArray = [data];
-                }
+            } else if (data && typeof data === 'object' && data.rooms) {
+                roomsArray = data.rooms;
             }
 
-            console.log("Salons récupérés:", roomsArray);
+            console.log("Salons extraits:", roomsArray);
 
+            // Vider la liste des salons
             const roomListEl = document.getElementById("room-list");
             if (!roomListEl) return;
+            roomListEl.innerHTML = "";
 
-            roomListEl.innerHTML = ""; // vide la liste actuelle
-
-            // Toujours ajouter le salon général par défaut en premier
-            const generalLi = document.createElement("li");
-            generalLi.textContent = "# Général";
-            generalLi.dataset.roomId = "general";
-            if ("general" === currentRoom) {
-                generalLi.classList.add("active-room");
-            }
-            generalLi.addEventListener("click", () => {
-                if ("general" !== currentRoom) {
-                    joinRoom("general");
-                }
-            });
-            roomListEl.appendChild(generalLi);
-
-            // Ajout des salons récupérés de l'API (sauf "general" qui est déjà ajouté)
+            // Ajouter chaque salon à la liste et à la carte
             if (roomsArray && roomsArray.length > 0) {
                 roomsArray.forEach(room => {
-                    // Assurez-vous que chaque élément de room est un objet avec une propriété 'name'
-                    const roomName = Array.isArray(room) ? room[1] : room.name;
-                    if (roomName === "general") return;
-
+                    // Extraire l'ID et le nom du salon selon le format de la réponse
+                    let roomId, roomName;
+                    
+                    if (Array.isArray(room)) {
+                        // Format [id, name, ...]
+                        roomId = room[0];
+                        roomName = room[1];
+                    } else {
+                        // Format {id: ..., name: ...}
+                        roomId = room.id;
+                        roomName = room.name;
+                    }
+                    
+                    // Stocker la correspondance nom -> id
+                    roomsMap[roomName] = roomId;
+                    
+                    // Créer l'élément de liste pour ce salon
                     const li = document.createElement("li");
                     li.textContent = `# ${roomName}`;
-                    li.dataset.roomId = roomName;
-
-                    if (roomName === currentRoom) {
+                    li.dataset.roomId = roomId; // Stocker l'ID numérique
+                    li.dataset.roomName = roomName; // Stocker le nom pour l'affichage
+                    
+                    if (roomId === currentRoomId) {
                         li.classList.add("active-room");
                     }
-
+                    
                     li.addEventListener("click", () => {
-                        if (roomName !== currentRoom) {
-                            joinRoom(roomName);
+                        if (roomId !== currentRoomId) {
+                            joinRoom(roomId, roomName);
                         }
                     });
-
+                    
                     roomListEl.appendChild(li);
                 });
-            }
-
-            // Si aucun salon n'a été créé, afficher un message dans la console
-            if (roomsArray.length === 0) {
-                console.log("Aucun salon personnalisé n'a été trouvé. Le salon Général est affiché par défaut.");
-            }
-        } catch (err) {
-            console.error("Erreur lors du chargement des salons :", err);
-
-            // En cas d'erreur, s'assurer qu'au moins le salon général est affiché
-            const roomListEl = document.getElementById("room-list");
-            if (roomListEl && roomListEl.children.length === 0) {
-                const generalLi = document.createElement("li");
-                generalLi.textContent = "# Général";
-                generalLi.dataset.roomId = "general";
-                if ("general" === currentRoom) {
-                    generalLi.classList.add("active-room");
+                
+                // Si le salon actuel n'est pas dans la liste, sélectionner le premier salon
+                if (!roomsMap[currentRoomName] && roomsArray.length > 0) {
+                    const firstRoom = roomsArray[0];
+                    const firstRoomId = Array.isArray(firstRoom) ? firstRoom[0] : firstRoom.id;
+                    const firstRoomName = Array.isArray(firstRoom) ? firstRoom[1] : firstRoom.name;
+                    
+                    currentRoomId = firstRoomId;
+                    currentRoomName = firstRoomName;
                 }
-                generalLi.addEventListener("click", () => {
-                    if ("general" !== currentRoom) {
-                        joinRoom("general");
-                    }
-                });
-                roomListEl.appendChild(generalLi);
+            } else {
+                console.log("Aucun salon trouvé, création d'un salon par défaut");
+                displaySystemMessage("Aucun salon disponible. Créez-en un !", true);
             }
+            
+            console.log("Carte des salons:", roomsMap);
+        } catch (err) {
+            console.error("Erreur lors du chargement des salons:", err);
+            displaySystemMessage("Erreur lors du chargement des salons", true);
         }
     }
 
@@ -205,7 +201,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     function updateUserListForRoom(roomId, users) {
         userList.innerHTML = "";
-        if (!users) return;
+        if (!users || Object.keys(users).length === 0) {
+            const li = document.createElement("li");
+            li.className = "no-users";
+            li.textContent = "Aucun utilisateur connecté";
+            userList.appendChild(li);
+            return;
+        }
+        
         for (const userId in users) {
             const li = document.createElement("li");
             li.textContent = users[userId];
@@ -221,17 +224,22 @@ document.addEventListener("DOMContentLoaded", async () => {
             });
             if (response.ok) {
                 currentUser = await response.json();
-                console.log("currentUser après /profile :", currentUser);
+                console.log("Utilisateur connecté:", currentUser);
+                
+                // Charger les salons d'abord
                 await loadRooms();
-                await loadChatHistory(currentRoom); // Charger l'historique pour le salon actuel
+                
+                // Puis charger l'historique du salon actuel
+                await loadChatHistory(currentRoomId);
+                
+                // Enfin, se connecter au WebSocket
                 connectWebSocket();
-
             } else {
                 displayChatMessage("error", "Vous devez être connecté pour utiliser le chat. Redirection...");
                 setTimeout(() => { window.location.href = "/login.html"; }, 2000);
             }
         } catch (error) {
-            console.error("Erreur récupération utilisateur :", error);
+            console.error("Erreur récupération utilisateur:", error);
             displayChatMessage("error", "Erreur de connexion. Redirection...");
             setTimeout(() => { window.location.href = "/login.html"; }, 2000);
         }
@@ -241,60 +249,75 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (!currentUser) return;
 
         const wsProtocol = location.protocol === "https:" ? "wss:" : "ws:";
-        const wsUrl = `${wsProtocol}//${API_BASE_URL.replace('http://', '' )}/ws`; // pas besoin des params username/userId
+        const wsUrl = `${wsProtocol}//${API_BASE_URL.replace('http://', '')}/ws`;
 
         socket = new WebSocket(wsUrl);
 
         socket.onopen = () => {
-            console.log("WebSocket connected.");
-            displaySystemMessage("Connecté au chat.");
-            joinRoom(currentRoom);
+            console.log("WebSocket connecté");
+            displaySystemMessage("Connecté au chat");
+            joinRoom(currentRoomId, currentRoomName);
         };
 
         socket.onmessage = (event) => {
             try {
                 const messageData = JSON.parse(event.data);
-                console.log("Reçu :", messageData);
+                console.log("Message WebSocket reçu:", messageData);
 
                 switch (messageData.type) {
                     case "chat_message":
-                        if (messageData.room_id === currentRoom) appendMessage(messageData);
+                        // Vérifier si le message appartient au salon actuel
+                        if (messageData.room_id == currentRoomId) {
+                            appendMessage(messageData);
+                        }
                         break;
                     case "user_joined":
-                        displaySystemMessage(`${messageData.username} a rejoint le salon.`);
-                        addUserToList(messageData.room_id, messageData.user_id, messageData.username);
+                        if (messageData.room_id == currentRoomId) {
+                            displaySystemMessage(`${messageData.username} a rejoint le salon`);
+                            addUserToList(messageData.room_id, messageData.user_id, messageData.username);
+                        }
                         break;
                     case "user_left":
-                        displaySystemMessage(`${messageData.username} a quitté le salon.`);
-                        removeUserFromList(messageData.room_id, messageData.user_id);
+                        if (messageData.room_id == currentRoomId) {
+                            displaySystemMessage(`${messageData.username} a quitté le salon`);
+                            removeUserFromList(messageData.room_id, messageData.user_id);
+                        }
                         break;
                     case "room_user_list":
-                        updateUserListForRoom(messageData.room_id, messageData.users);
+                        if (messageData.room_id == currentRoomId) {
+                            updateUserListForRoom(messageData.room_id, messageData.users);
+                        }
                         break;
                     case "error":
-                        displaySystemMessage(`Erreur : ${messageData.message}`, true);
+                        displaySystemMessage(`Erreur: ${messageData.message}`, true);
                         break;
                     default:
-                        console.warn("Type inconnu :", messageData.type);
+                        console.warn("Type de message inconnu:", messageData.type);
                 }
             } catch (err) {
-                console.error("Erreur de parsing WS :", err);
+                console.error("Erreur de parsing WebSocket:", err);
             }
         };
 
         socket.onclose = () => {
-            displaySystemMessage("Déconnecté du chat.", true);
+            displaySystemMessage("Déconnecté du chat", true);
         };
 
         socket.onerror = (e) => {
-            console.error("Erreur WebSocket :", e);
-            displaySystemMessage("Erreur WebSocket.", true);
+            console.error("Erreur WebSocket:", e);
+            displaySystemMessage("Erreur de connexion au chat", true);
         };
     }
 
-    function joinRoom(roomId) {
+    function joinRoom(roomId, roomName) {
         if (socket && socket.readyState === WebSocket.OPEN) {
-            currentRoom = roomId;
+            // Mettre à jour les variables de salon actuel
+            currentRoomId = roomId;
+            currentRoomName = roomName;
+            
+            console.log(`Rejoindre le salon: ID=${roomId}, Nom=${roomName}`);
+            
+            // Envoyer la demande de rejoindre le salon au serveur
             socket.send(JSON.stringify({
                 type: "join_room",
                 room_id: roomId,
@@ -302,15 +325,18 @@ document.addEventListener("DOMContentLoaded", async () => {
                 username: currentUser.username
             }));
 
-            displaySystemMessage(`Salon rejoint : #${roomId}`);
-
+            // Mettre à jour l'interface
+            displaySystemMessage(`Salon rejoint: #${roomName}`);
+            
+            // Mettre à jour la classe active dans la liste des salons
             document.querySelectorAll("#room-list li").forEach(li => li.classList.remove("active-room"));
             const activeRoom = document.querySelector(`#room-list li[data-room-id="${roomId}"]`);
             if (activeRoom) activeRoom.classList.add("active-room");
-
+            
+            // Vider la liste des utilisateurs
             userList.innerHTML = "";
-
-            // Charger l'historique des messages pour le nouveau salon
+            
+            // Charger l'historique des messages pour ce salon
             loadChatHistory(roomId);
         }
     }
@@ -319,17 +345,22 @@ document.addEventListener("DOMContentLoaded", async () => {
         const message = messageInput.value.trim();
         if (!message || !socket || socket.readyState !== WebSocket.OPEN) return;
 
+        console.log(`Envoi d'un message au salon ID=${currentRoomId}, Nom=${currentRoomName}`);
+        
+        // Envoyer le message au serveur WebSocket
         socket.send(JSON.stringify({
             type: "chat_message",
-            room_id: currentRoom,
+            room_id: currentRoomId,
             message,
             username: currentUser.username,
             user_id: currentUser.id
         }));
 
+        // Vider le champ de saisie
         messageInput.value = "";
     }
 
+    // Gestionnaires d'événements
     if (sendMessageBtn) {
         sendMessageBtn.addEventListener("click", sendMessage);
     }
@@ -343,25 +374,20 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
-    if (roomList) {
-        roomList.addEventListener("click", (e) => {
-            if (e.target.tagName === "LI" && e.target.dataset.roomId) {
-                const newRoom = e.target.dataset.roomId;
-                if (newRoom !== currentRoom) {
-                    joinRoom(newRoom);
-                }
-            }
-        });
-    }
-
     if (createRoomForm) {
         createRoomForm.addEventListener("submit", async (e) => {
             e.preventDefault();
             const roomNameInput = document.getElementById("new-room-name");
             const roomName = roomNameInput.value.trim();
-            if (!roomName) return alert("Le nom du salon ne peut pas être vide !");
+            
+            if (!roomName) {
+                alert("Le nom du salon ne peut pas être vide !");
+                return;
+            }
+            
             try {
-                console.log("Tentative de création du salon:", roomName);
+                console.log("Création d'un nouveau salon:", roomName);
+                
                 const res = await fetch(`${API_BASE_URL}/rooms`, {
                     method: "POST",
                     credentials: "include",
@@ -369,93 +395,37 @@ document.addEventListener("DOMContentLoaded", async () => {
                     body: JSON.stringify({ name: roomName })
                 });
 
-                console.log("Statut de la réponse:", res.status);
+                console.log("Réponse de création:", res.status);
                 const data = await res.json();
-                console.log("Données reçues après création:", data);
-
+                
                 if (res.ok) {
-                    alert("Salon créé !");
+                    alert("Salon créé avec succès !");
                     roomNameInput.value = "";
-
-                    // Ajout manuel du salon à la liste si l'API ne le renvoie pas lors du rechargement
-                    const roomListEl = document.getElementById("room-list");
-                    if (roomListEl) {
-                        const newRoomLi = document.createElement("li");
-                        newRoomLi.textContent = `# ${roomName}`;
-                        newRoomLi.dataset.roomId = roomName;
-
-                        newRoomLi.addEventListener("click", () => {
-                            if (roomName !== currentRoom) {
-                                joinRoom(roomName);
-                            }
-                        });
-
-                        roomListEl.appendChild(newRoomLi);
-                    }
-
-                    // Rechargement des salons depuis l'API
-                    try {
-                        await loadRooms();
-                        console.log("Liste des salons rechargée après création");
-                    } catch (loadErr) {
-                        console.error("Erreur lors du rechargement des salons:", loadErr);
+                    
+                    // Recharger la liste des salons pour obtenir l'ID du nouveau salon
+                    await loadRooms();
+                    
+                    // Si le nouveau salon est dans la carte, le rejoindre
+                    if (roomsMap[roomName]) {
+                        joinRoom(roomsMap[roomName], roomName);
                     }
                 } else {
                     alert(data.error || "Erreur lors de la création du salon");
                 }
             } catch (err) {
                 console.error("Erreur lors de la création du salon:", err);
-                alert("Erreur réseau");
+                alert("Erreur réseau lors de la création du salon");
             }
         });
     }
 
-    // Lancement
+    // Initialisation
     fetchChatUser();
 
-    // GSAP animation (optionnel si utilisé)
+    // Animations GSAP (si disponible)
     if (typeof gsap !== "undefined") {
         gsap.from(".chat-sidebar", { duration: 0.7, x: -50, opacity: 0, ease: "power2.out", delay: 0.2 });
         gsap.from(".chat-main", { duration: 0.7, x: 50, opacity: 0, ease: "power2.out", delay: 0.3 });
         gsap.from("#chat-input-area", { duration: 0.5, y: 30, opacity: 0, ease: "power2.out", delay: 0.5 });
     }
 });
-
-function appendRoom(room) {
-    const div = document.createElement("div");
-    div.className = "chat-room";
-    div.innerHTML = `
-        <span>${room.name}</span>
-        ${currentUser?.role === "admin" ? `<button class="delete-room-btn" data-id="${room.id}">🗑️</button>` : ""}
-    `;
-    roomsContainer.appendChild(div);
-
-    if (currentUser?.role === "admin") {
-        const deleteBtn = div.querySelector(".delete-room-btn");
-        if (deleteBtn) {
-            deleteBtn.addEventListener("click", async () => {
-                const confirmed = confirm("Supprimer ce salon ?");
-                if (!confirmed) return;
-
-                try {
-                    const res = await fetch(`${API_BASE_URL}/rooms`, {
-                        method: "DELETE",
-                        credentials: "include",
-                        mode: "cors"
-                    });
-
-                    if (res.ok) {
-                        div.remove();
-                        displayChatMessage("success", "Salon supprimé");
-                    } else {
-                        const error = await res.json();
-                        displayChatMessage("error", error.message || "Erreur suppression salon");
-                    }
-                } catch (err) {
-                    console.error("Erreur suppression salon :", err);
-                    displayChatMessage("error", "Erreur réseau");
-                }
-            });
-        }
-    }
-}
