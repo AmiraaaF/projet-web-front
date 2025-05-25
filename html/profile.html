@@ -5,28 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mon Profil - Parkly</title>
     <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/profile.css"> <!-- Specific styles for profile page -->
+    <link rel="stylesheet" href="../css/profile.css">
 </head>
 <body>
     <header>
         <div class="logo">
-            <a href="/">Parkly</a>
+            <a href="/html/index.html">Parkly</a>
         </div>
-       <nav>
-            
-
+        <nav>
             <ul class="nav-links">
-                <li><a href="/">Accueil</a></li>
-                <li><a href="/search.html">Rechercher</a></li>
-                <li><a href="/blog.html">Blog</a></li>
-                <li><a href="/chat.html">Chat</a></li> 
-                <!-- <li><a href="/profile.html" id="profile-link">Mon Profil</a></li> -->
-
+                <li><a href="/html/index.html">Accueil</a></li>
+                <li><a href="/html/search.html">Rechercher</a></li>
+                <li><a href="/html/blog.html">Blog</a></li>
+                <li><a href="/html/chat.html">Chat</a></li>
+                <!-- <li><a href="/html/profile.html" id="profile-link">Mon Profil</a></li> -->
             </ul>
             <div class="auth-links" id="auth-links">
             <!-- Rempli dynamiquement via JS -->
             </div>
-
         </nav>
         <div class="burger">
             <div class="line1"></div>
@@ -50,7 +46,6 @@
                     <p><strong>Bio:</strong> <span id="profile-bio">Non définie</span></p>
                     <p><strong>Membre depuis:</strong> <span id="profile-created-at">Chargement...</span></p>
                     <p><strong>Dernière connexion:</strong> <span id="profile-last-login">Chargement...</span></p>
-                    <!-- Preferences could be displayed here if structured -->
                 </div>
                 <button id="edit-profile-btn" class="cta-button">Modifier le Profil</button>
             </div>
@@ -70,7 +65,6 @@
                         <label for="edit-bio">Bio</label>
                         <textarea id="edit-bio" name="bio"></textarea>
                     </div>
-                    <!-- Add fields for preferences if needed -->
                     <div class="form-actions">
                         <button type="submit" id="save-profile-button" class="cta-button">Enregistrer</button>
                         <button type="button" id="cancel-edit-btn" class="cta-button secondary">Annuler</button>
@@ -82,7 +76,7 @@
 
     <footer>
         <p>&copy; 2025 Parkly. Tous droits réservés.</p>
-        <p><a href="/privacy.html">Politique de confidentialité</a> | <a href="/terms.html">Conditions d'utilisation</a></p>
+        <p><a href="/html/privacy.html">Politique de confidentialité</a> | <a href="/html/terms.html">Conditions d'utilisation</a></p>
     </footer>
 
     <script src="../javascript/script.js"></script>
