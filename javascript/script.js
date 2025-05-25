@@ -77,7 +77,7 @@ async function login() {
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || "Erreur de connexion inconnue");
         alert("Connexion réussie !");
-        window.location.href = "index.html";
+        window.location.href = "/html/index.html";
     } catch (error) {
         alert('Erreur : ' + error.message);
     }
@@ -105,7 +105,7 @@ async function register() {
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || "Erreur d'inscription inconnue");
         alert("Compte créé avec succès ! Vous pouvez maintenant vous connecter.");
-        window.location.href = "login.html";
+        window.location.href = "/html/login.html";
     } catch (error) {
         alert("Erreur : " + error.message);
     }
@@ -122,8 +122,8 @@ async function logout() {
         if (response.ok) {
             alert("Déconnexion réussie.");
             updateAuthLinks(); 
-            if (window.location.pathname.includes("profile.html")) {
-                 window.location.href = "index.html";
+            if (window.location.pathname.includes("/html/profile.html")) {
+                 window.location.href = "/html/index.html";
             } else {
                  window.location.reload(); 
             }
@@ -159,7 +159,7 @@ async function updateAuthLinks() {
           <span id="profile-dropdown-toggle" class="profile-icon" title="Mon Profil">👤</span>
           <span class="welcome-user">Bonjour, ${data.username}</span>
           <div id="profile-dropdown-content" class="dropdown-content">
-            <a href="/profile.html">Mon Profil</a>
+            <a href="/html/profile.html">Mon Profil</a>
             <a href="#" onclick="logout(); return false;">Déconnexion</a>
           </div>
         </div>
@@ -175,13 +175,13 @@ async function updateAuthLinks() {
       }
     } else {
       authContainer.innerHTML = `
-        <a href="/login.html" class="auth-button login-button">Connexion</a>
+        <a href="/html/login.html" class="auth-button login-button">Connexion</a>
       `;
     }
   } catch (error) {
     console.error("Erreur lors de la mise à jour des liens d'authentification:", error);
     authContainer.innerHTML = `
-      <a href="/login.html" class="auth-button login-button">Connexion</a>
+      <a href="/html/login.html" class="auth-button login-button">Connexion</a>
     `;
   }
 }
