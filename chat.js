@@ -91,6 +91,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
+
     function addUserToList(roomId, userId, username) {
         if (!activeUsers[roomId]) activeUsers[roomId] = {};
         activeUsers[roomId][userId] = username;
@@ -101,100 +102,59 @@ document.addEventListener("DOMContentLoaded", async () => {
         try {
             const res = await fetch(`${API_BASE_URL}/rooms`, { credentials: "include" });
             const data = await res.json();
-
-            // Vérification du type de la réponse et extraction du tableau de salons
-            let roomsArray = [];
-            if (Array.isArray(data)) {
-                // Si la réponse est déjà un tableau
-                roomsArray = data;
-            } else if (data && typeof data === 'object') {
-                // Si la réponse est un objet qui contient un tableau (ex: { rooms: [...] })
-                // Chercher une propriété qui pourrait contenir le tableau de salons
-                for (const key in data) {
-                    if (Array.isArray(data[key])) {
-                        roomsArray = data[key];
-                        break;
-                    }
-                }
-
-                // Si aucun tableau n'a été trouvé mais que l'objet a une propriété 'name',
-                // c'est peut-être un salon unique
-                if (roomsArray.length === 0 && data.name) {
-                    roomsArray = [data];
-                }
-            }
-
-            console.log("Salons récupérés:", roomsArray);
-
+            
             const roomListEl = document.getElementById("room-list");
             if (!roomListEl) return;
+            roomListEl.innerHTML = "";
 
-            roomListEl.innerHTML = ""; // vide la liste actuelle
-
-            // Toujours ajouter le salon général par défaut en premier
+            // Ajouter le salon général par défaut
             const generalLi = document.createElement("li");
             generalLi.textContent = "# Général";
             generalLi.dataset.roomId = "general";
+            generalLi.dataset.roomNumId = "1"; // ID numérique du salon général
             if ("general" === currentRoom) {
                 generalLi.classList.add("active-room");
             }
             generalLi.addEventListener("click", () => {
                 if ("general" !== currentRoom) {
-                    joinRoom("general");
+                    joinRoom(1, "general"); // ID numérique + nom
                 }
             });
             roomListEl.appendChild(generalLi);
 
-            // Ajout des salons récupérés de l'API (sauf "general" qui est déjà ajouté)
-            if (roomsArray && roomsArray.length > 0) {
-                roomsArray.forEach(room => {
-                    // Assurez-vous que chaque élément de room est un objet avec une propriété 'name'
-                    const roomName = Array.isArray(room) ? room[1] : room.name;
-                    if (roomName === "general") return;
+            // Ajouter les autres salons
+            if (Array.isArray(data) && data.length > 0) {
+                data.forEach(room => {
+                    if (Array.isArray(room) && room.length >= 2) {
+                        const roomId = room[0];    // ID numérique
+                        const roomName = room[1];  // Nom du salon
+                        
+                        if (roomName === "general") return;
 
-                    const li = document.createElement("li");
-                    li.textContent = `# ${roomName}`;
-                    li.dataset.roomId = roomName;
+                        const li = document.createElement("li");
+                        li.textContent = `# ${roomName}`;
+                        li.dataset.roomId = roomName;
+                        li.dataset.roomNumId = roomId;
 
-                    if (roomName === currentRoom) {
-                        li.classList.add("active-room");
-                    }
-
-                    li.addEventListener("click", () => {
-                        if (roomName !== currentRoom) {
-                            joinRoom(roomName);
+                        if (roomName === currentRoom) {
+                            li.classList.add("active-room");
                         }
-                    });
 
-                    roomListEl.appendChild(li);
+                        li.addEventListener("click", () => {
+                            if (roomName !== currentRoom) {
+                                joinRoom(roomId, roomName); // ID numérique + nom
+                            }
+                        });
+
+                        roomListEl.appendChild(li);
+                    }
                 });
-            }
-
-            // Si aucun salon n'a été créé, afficher un message dans la console
-            if (roomsArray.length === 0) {
-                console.log("Aucun salon personnalisé n'a été trouvé. Le salon Général est affiché par défaut.");
             }
         } catch (err) {
             console.error("Erreur lors du chargement des salons :", err);
-
-            // En cas d'erreur, s'assurer qu'au moins le salon général est affiché
-            const roomListEl = document.getElementById("room-list");
-            if (roomListEl && roomListEl.children.length === 0) {
-                const generalLi = document.createElement("li");
-                generalLi.textContent = "# Général";
-                generalLi.dataset.roomId = "general";
-                if ("general" === currentRoom) {
-                    generalLi.classList.add("active-room");
-                }
-                generalLi.addEventListener("click", () => {
-                    if ("general" !== currentRoom) {
-                        joinRoom("general");
-                    }
-                });
-                roomListEl.appendChild(generalLi);
-            }
         }
     }
+
 
     function removeUserFromList(roomId, userId) {
         if (activeUsers[roomId]) {
@@ -223,7 +183,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 currentUser = await response.json();
                 console.log("currentUser après /profile :", currentUser);
                 await loadRooms();
-                await loadChatHistory(currentRoom); // Charger l'historique pour le salon actuel
+                await loadChatHistory(1); // Charger l'historique pour le salon actuel
                 connectWebSocket();
 
             } else {
@@ -292,28 +252,29 @@ document.addEventListener("DOMContentLoaded", async () => {
         };
     }
 
-    function joinRoom(roomId) {
-        if (socket && socket.readyState === WebSocket.OPEN) {
-            currentRoom = roomId;
-            socket.send(JSON.stringify({
-                type: "join_room",
-                room_id: roomId,
-                user_id: currentUser.id,
-                username: currentUser.username
-            }));
+    function joinRoom(roomId, roomName) {
+    if (socket && socket.readyState === WebSocket.OPEN) {
+        currentRoom = roomName; // Gardez le nom pour la compatibilité
+        socket.send(JSON.stringify({
+            type: "join_room",
+            room_id: roomId, // Utilisez l'ID numérique ici
+            user_id: currentUser.id,
+            username: currentUser.username
+        }));
 
-            displaySystemMessage(`Salon rejoint : #${roomId}`);
+        displaySystemMessage(`Salon rejoint : #${roomName}`);
 
-            document.querySelectorAll("#room-list li").forEach(li => li.classList.remove("active-room"));
-            const activeRoom = document.querySelector(`#room-list li[data-room-id="${roomId}"]`);
-            if (activeRoom) activeRoom.classList.add("active-room");
+        document.querySelectorAll("#room-list li").forEach(li => li.classList.remove("active-room"));
+        const activeRoom = document.querySelector(`#room-list li[data-room-id="${roomName}"]`);
+        if (activeRoom) activeRoom.classList.add("active-room");
 
-            userList.innerHTML = "";
-
-            // Charger l'historique des messages pour le nouveau salon
-            loadChatHistory(roomId);
-        }
+        userList.innerHTML = "";
+        
+        // Charger l'historique avec l'ID numérique
+        loadChatHistory(roomId);
     }
+}
+
 
     function sendMessage() {
         const message = messageInput.value.trim();
