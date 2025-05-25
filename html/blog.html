@@ -4,31 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blog - Parkly</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/blog.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/blog.css">
     <script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-
 </head>
 <body>
     <header>
         <div class="logo">
-            <a href="/">Parkly</a>
+            <a href="index.html">Parkly</a>
         </div>
         <nav>
-            
-
             <ul class="nav-links">
-                <li><a href="/">Accueil</a></li>
-                <li><a href="/search.html">Rechercher</a></li>
-                <li><a href="/blog.html">Blog</a></li>
-                <li><a href="/chat.html">Chat</a></li> 
-                <!-- <li><a href="/profile.html" id="profile-link">Mon Profil</a></li> -->
-
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="search.html">Rechercher</a></li>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="chat.html">Chat</a></li>
+                <!-- <li><a href="profile.html" id="profile-link">Mon Profil</a></li> -->
             </ul>
             <div class="auth-links" id="auth-links">
             <!-- Rempli dynamiquement via JS -->
             </div>
-
         </nav>
         <div class="burger">
             <div class="line1"></div>
@@ -43,12 +38,10 @@
             <p class="subtitle">Partagez vos astuces, expériences et actualités sur le stationnement.</p>
             
             <div id="message-container-blog"></div>
-
             
             <div class="posts-list-container"> 
                 <h3>Derniers messages</h3>
                 <div id="posts-container" class="posts-grid">
-
                     <!-- Les messages du blog seront injectés ici -->
                     <p class="no-posts">Aucun message pour le moment. Soyez le premier à publier !</p>
                 </div>
@@ -61,7 +54,6 @@
                  <div id="login-message" class="hidden">
                       <p>Vous devez être connecté pour publier un message.</p>
                  </div>
-
                 <form id="new-post-form" class="hidden">
                     <div class="form-group">
                         <label for="post-title">Titre</label>
@@ -73,20 +65,18 @@
                     </div>
                     <button type="submit" id="submit-post-btn" class="cta-button">Publier</button>
                 </form>
-                
             </div>
-
         </section>
     </main>
 
     <footer>
         <p>&copy; 2025 Parkly. Tous droits réservés.</p>
-        <p><a href="/privacy.html">Politique de confidentialité</a> | <a href="/terms.html">Conditions d_utilisation</a></p>
+        <p><a href="privacy.html">Politique de confidentialité</a> | <a href="terms.html">Conditions d'utilisation</a></p>
     </footer>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <script src="javascript/script.js"></script>
-    <script src="javascript/blog.js"></script>
+    <script src="../javascript/script.js"></script>
+    <script src="../javascript/blog.js"></script>
 </body>
 </html>
 
