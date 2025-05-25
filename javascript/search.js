@@ -120,15 +120,22 @@ async function getNearbyParkings(lat, lon) {
 
         // Affichage sur la carte
         results.forEach(p => {
-            const iconUrl = p.covered
-                ? "../marker-icon-yellow.png"
-                : (p.type === "private" ? "../marker-icon-2x-red.png" : "../marker-icon-2x-green.png");
+            let iconUrl;
 
-            const icon = L.icon({
-                iconUrl: `http://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/${iconUrl}`,
-                iconSize: [25, 41],
-                iconAnchor: [12, 41]
-            });
+        if (p.covered) {
+            iconUrl = "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-yellow.png";
+        } else if (p.type === "private") {
+            iconUrl = "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png";
+        } else {
+            iconUrl = "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png";
+        }
+
+        const icon = L.icon({
+            iconUrl: iconUrl,
+            iconSize: [25, 41],
+            iconAnchor: [12, 41]
+        });
+
 
             L.marker([p.lat, p.lon], { icon })
                 .addTo(map)
