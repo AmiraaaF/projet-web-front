@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://projet-web-back.cluster-ig3.igpolytech.fr:3002";
+onst API_BASE_URL = "http://projet-web-back.cluster-ig3.igpolytech.fr:3002";
 
 document.addEventListener("DOMContentLoaded", async () => {
     const chatWindow = document.getElementById("chat-window");
@@ -150,22 +150,21 @@ document.addEventListener("DOMContentLoaded", async () => {
                     // Ne pas ajouter à nouveau le salon général s'il existe déjà dans l'API
                     if (room.name === "general") return;
                     
-                    const li = document.createElement("li");
-                    li.textContent = `# ${room.name}`;
-                    li.dataset.roomId = room.name;
-
-                    if (room.name === currentRoom) {
-                        li.classList.add("active-room");
-                    }
-
-                    li.addEventListener("click", () => {
-                        if (room.name !== currentRoom) {
-                            joinRoom(room.name);
-                        }
-                    });
-
-                    roomListEl.appendChild(li);
+                    addRoomToList(room.name);
                 });
+            }
+            
+            // Récupérer et ajouter les salons stockés localement
+            try {
+                const storedRooms = localStorage.getItem('createdRooms');
+                if (storedRooms) {
+                    const createdRooms = JSON.parse(storedRooms);
+                    createdRooms.forEach(roomName => {
+                        addRoomToList(roomName);
+                    });
+                }
+            } catch (e) {
+                console.error("Erreur lors de la récupération des salons stockés:", e);
             }
             
             // Si aucun salon n'a été créé, afficher un message dans la console
@@ -190,6 +189,19 @@ document.addEventListener("DOMContentLoaded", async () => {
                     }
                 });
                 roomListEl.appendChild(generalLi);
+            }
+            
+            // Récupérer et ajouter les salons stockés localement même en cas d'erreur API
+            try {
+                const storedRooms = localStorage.getItem('createdRooms');
+                if (storedRooms) {
+                    const createdRooms = JSON.parse(storedRooms);
+                    createdRooms.forEach(roomName => {
+                        addRoomToList(roomName);
+                    });
+                }
+            } catch (e) {
+                console.error("Erreur lors de la récupération des salons stockés:", e);
             }
         }
     }
@@ -374,21 +386,25 @@ document.addEventListener("DOMContentLoaded", async () => {
                     alert("Salon créé !");
                     roomNameInput.value = "";
                     
-                    // Ajout manuel du salon à la liste si l'API ne le renvoie pas lors du rechargement
-                    const roomListEl = document.getElementById("room-list");
-                    if (roomListEl) {
-                        const newRoomLi = document.createElement("li");
-                        newRoomLi.textContent = `# ${roomName}`;
-                        newRoomLi.dataset.roomId = roomName;
-                        
-                        newRoomLi.addEventListener("click", () => {
-                            if (roomName !== currentRoom) {
-                                joinRoom(roomName);
-                            }
-                        });
-                        
-                        roomListEl.appendChild(newRoomLi);
+                    // Stockage local des salons créés
+                    let createdRooms = [];
+                    try {
+                        const storedRooms = localStorage.getItem('createdRooms');
+                        if (storedRooms) {
+                            createdRooms = JSON.parse(storedRooms);
+                        }
+                    } catch (e) {
+                        console.error("Erreur lors de la récupération des salons stockés:", e);
                     }
+                    
+                    // Ajouter le nouveau salon s'il n'existe pas déjà
+                    if (!createdRooms.includes(roomName)) {
+                        createdRooms.push(roomName);
+                        localStorage.setItem('createdRooms', JSON.stringify(createdRooms));
+                    }
+                    
+                    // Ajout manuel du salon à la liste
+                    addRoomToList(roomName);
                     
                     // Rechargement des salons depuis l'API
                     try {
@@ -405,6 +421,32 @@ document.addEventListener("DOMContentLoaded", async () => {
                 alert("Erreur réseau");
             }
         });
+    }
+    
+    // Fonction pour ajouter un salon à la liste d'affichage
+    function addRoomToList(roomName) {
+        if (!roomName) return;
+        
+        const roomListEl = document.getElementById("room-list");
+        if (!roomListEl) return;
+        
+        // Vérifier si le salon existe déjà dans la liste
+        const existingRoom = document.querySelector(`#room-list li[data-room-id="${roomName}"]`);
+        if (existingRoom) return;
+        
+        // Créer et ajouter le nouvel élément
+        const newRoomLi = document.createElement("li");
+        newRoomLi.textContent = `# ${roomName}`;
+        newRoomLi.dataset.roomId = roomName;
+        
+        newRoomLi.addEventListener("click", () => {
+            if (roomName !== currentRoom) {
+                joinRoom(roomName);
+            }
+        });
+        
+        roomListEl.appendChild(newRoomLi);
+        console.log(`Salon "${roomName}" ajouté manuellement à la liste d'affichage`);
     }
 
     // Lancement
