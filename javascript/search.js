@@ -96,7 +96,7 @@ async function getNearbyParkings(lat, lon) {
     `;
 
     try {
-        const response = await fetch("http://overpass-api.de/api/interpreter", {
+        const response = await fetch("https://overpass-api.de/api/interpreter", {
             method: "POST",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded"
