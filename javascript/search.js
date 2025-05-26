@@ -171,7 +171,7 @@ document.getElementById("search-form").addEventListener("submit", (event) => {
     const address = document.getElementById("address-input").value;
 
     // Utilise l'API Nominatim pour géocoder l'adresse saisie
-    fetch(`http://nominatim.openstreetmap.org/search?format=json&q=${address}`)
+    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${address}`)
         .then(res => res.json())
         .then(data => {
             if (data.length > 0) {
