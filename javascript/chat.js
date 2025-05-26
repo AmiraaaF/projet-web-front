@@ -240,8 +240,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     function connectWebSocket() {
         if (!currentUser) return;
 
-        // Construction correcte de l'URL WebSocket
-        // Remplacez le port si besoin (ici 3002)
+        const wsProtocol = location.protocol === "https:" ? "wss:" : "ws:";
+        
         const wsUrl = "wss://projet-web-back.cluster-ig3.igpolytech.fr:3002/ws";
 
         socket = new WebSocket(wsUrl);
