@@ -18,7 +18,9 @@
       <input type="text" id="nom" required /><br />
 
       <label>Adresse :</label><br />
-      <input type="text" id="adresse" required /><br />
+      <input type="text" id="adresse" autocomplete="off" required />
+      <div id="suggestions" class="suggestions-list"></div>
+
 
       
       <button type="submit">Créer le parking</button>
