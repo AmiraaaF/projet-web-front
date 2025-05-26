@@ -167,7 +167,7 @@
 /* Décoration de la sidebar */
 .chat-sidebar::after {
     content: '';
-    background-image: url('parking_illustration.png');
+    
     background-size: 100px;
     background-position: bottom right;
     background-repeat: no-repeat;

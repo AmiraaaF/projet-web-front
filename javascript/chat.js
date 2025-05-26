@@ -199,7 +199,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (activeUsers[roomId]) {
             delete activeUsers[roomId][userId];
         //     updateUserListForRoom(roomId, activeUsers[roomId]);
-        // }
+        }
     }
 
     // // Met à jour l'affichage de la liste des utilisateurs pour un salon donné
