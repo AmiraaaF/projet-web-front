@@ -101,7 +101,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     function addUserToList(roomId, userId, username) {
         if (!activeUsers[roomId]) activeUsers[roomId] = {};
         activeUsers[roomId][userId] = username;
-        updateUserListForRoom(roomId, activeUsers[roomId]);
+        // updateUserListForRoom(roomId, activeUsers[roomId]);
     }
 
     // Charge la liste des salons depuis l'API et met à jour l'affichage
@@ -198,20 +198,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     function removeUserFromList(roomId, userId) {
         if (activeUsers[roomId]) {
             delete activeUsers[roomId][userId];
-            updateUserListForRoom(roomId, activeUsers[roomId]);
-        }
+        //     updateUserListForRoom(roomId, activeUsers[roomId]);
+        // }
     }
 
-    // Met à jour l'affichage de la liste des utilisateurs pour un salon donné
-    function updateUserListForRoom(roomId, users) {
-        userList.innerHTML = "";
-        if (!users) return;
-        for (const userId in users) {
-            const li = document.createElement("li");
-            li.textContent = users[userId];
-            userList.appendChild(li);
-        }
-    }
+    // // Met à jour l'affichage de la liste des utilisateurs pour un salon donné
+    // function updateUserListForRoom(roomId, users) {
+    //     userList.innerHTML = "";
+    //     if (!users) return;
+    //     for (const userId in users) {
+    //         const li = document.createElement("li");
+    //         li.textContent = users[userId];
+    //         userList.appendChild(li);
+    //     }
+    // }
 
     // Récupère les infos de l'utilisateur connecté et initialise le chat
     async function fetchChatUser() {
@@ -267,9 +267,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                         displaySystemMessage(`${messageData.username} a quitté le salon.`);
                         removeUserFromList(messageData.room_id, messageData.user_id);
                         break;
-                    case "room_user_list":
-                        updateUserListForRoom(messageData.room_id, messageData.users);
-                        break;
+                    // case "room_user_list":
+                    //     updateUserListForRoom(messageData.room_id, messageData.users);
+                    //     break;
                     case "error":
                         displaySystemMessage(`Erreur : ${messageData.message}`, true);
                         break;
