@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ nom, adresse, lat, lon }),
+        body: JSON.stringify({ nom, adresse }),
       });
 
       const data = await res.json();
