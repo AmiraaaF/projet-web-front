@@ -53,7 +53,7 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
 }
 
 // URL de l'API backend
-const API_URL = "http://projet-web-back.cluster-ig3.igpolytech.fr:3002";
+const API_URL = "https://projet-web-back.cluster-ig3.igpolytech.fr:3002";
 
 // Fonction de connexion utilisateur
 async function login() {

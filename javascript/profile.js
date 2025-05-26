@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://projet-web-back.cluster-ig3.igpolytech.fr:3002";
+const API_BASE_URL = "https://projet-web-back.cluster-ig3.igpolytech.fr:3002";
 
 // Quand la page est chargée, on prépare la gestion du profil utilisateur
 document.addEventListener("DOMContentLoaded", async () => {

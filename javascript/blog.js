@@ -1,6 +1,6 @@
 // Vérifie si API_URL est déjà définie (par exemple dans script.js), sinon la définit ici
 if (typeof API_URL === "undefined") {
-  const API_URL = "http://projet-web-back.cluster-ig3.igpolytech.fr:3002";
+  const API_URL = "https://projet-web-back.cluster-ig3.igpolytech.fr:3002";
 }
 
 // Quand la page est chargée, lance la vérification utilisateur et le chargement des posts

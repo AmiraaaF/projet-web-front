@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://projet-web-back.cluster-ig3.igpolytech.fr:3002";
+const API_BASE_URL = "https://projet-web-back.cluster-ig3.igpolytech.fr:3002";
 
 // Quand la page est chargée, on initialise tout le chat
 document.addEventListener("DOMContentLoaded", async () => {
