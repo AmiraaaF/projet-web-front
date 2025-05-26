@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const messageInput = document.getElementById("chat-message-input");
     const sendMessageBtn = document.getElementById("send-chat-message-btn");
     const roomList = document.getElementById("room-list");
-    const userList = document.getElementById("user-list");
+    // const userList = document.getElementById("user-list");
     const messageContainerChat = document.getElementById("message-container-chat");
     const createRoomForm = document.getElementById("create-room-form");
 
@@ -308,7 +308,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const activeRoom = document.querySelector(`#room-list li[data-room-id="${roomId}"]`);
             if (activeRoom) activeRoom.classList.add("active-room");
 
-            userList.innerHTML = "";
+            // userList.innerHTML = "";
 
             // Charge l'historique des messages pour le nouveau salon
             loadChatHistory(roomId);
