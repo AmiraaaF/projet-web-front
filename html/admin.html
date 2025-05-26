@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin - Ajouter un Parking</title>
+  <link rel="stylesheet" href="/css/styleAdmin.css" />
+</head>
+<body>
+  <header>
+    <a href="/">← Retour</a>
+    <h1>Ajout de Parking (Admin)</h1>
+  </header>
+
+  <main>
+    <form id="parking-form">
+      <label>Nom :</label><br />
+      <input type="text" id="nom" required /><br />
+
+      <label>Adresse :</label><br />
+      <input type="text" id="adresse" required /><br />
+
+      <label>Latitude :</label><br />
+      <input type="number" id="lat" step="any" required /><br />
+
+      <label>Longitude :</label><br />
+      <input type="number" id="lon" step="any" required /><br />
+
+      <button type="submit">Créer le parking</button>
+    </form>
+
+    <div id="message-container"></div>
+  </main>
+
+  <script src="/javascript/admin.js"></script>
+</body>
+</html>

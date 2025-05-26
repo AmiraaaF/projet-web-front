@@ -40,19 +40,49 @@ function success(position) {
     map.fitBounds(circle.getBounds());
 
     // Récupère et affiche les parkings à proximité
-    getNearbyParkings(lat, lon).then(parkings => {
-        parkings.forEach(p => {
-            // Icône personnalisée (verte) pour les parkings
-            const parkingIcon = L.icon({
-                iconUrl: 'http://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
-                iconSize: [25, 41],
-                iconAnchor: [12, 41]
-            });
-            L.marker([p.lat, p.lon], { icon: parkingIcon }) 
-                .addTo(map)
-                .bindPopup(p.name);
+    Promise.all([
+    getNearbyParkings(lat, lon),
+    getPrivateParkings(lat, lon)
+]).then(([osmParkings, privateParkings]) => {
+    const allParkings = [...osmParkings, ...privateParkings];
+
+    allParkings.forEach(p => {
+        let iconUrl;
+        if (p.covered) {
+            iconUrl = "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-yellow.png";
+        } else if (p.type === "privé") {
+            iconUrl = "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png";
+        } else {
+            iconUrl = "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png";
+        }
+
+        const icon = L.icon({
+            iconUrl,
+            iconSize: [25, 41],
+            iconAnchor: [12, 41]
         });
+
+        L.marker([p.lat, p.lon], { icon })
+            .addTo(map)
+            .bindPopup(`<strong>${p.name}</strong><br>Type : ${p.type}<br>Couvert : ${p.covered ? "Oui" : "Non"}`);
     });
+
+    // Mise à jour affichage textuel
+    const listContainer = document.getElementById("results-list");
+    listContainer.innerHTML = "";
+    allParkings.forEach(p => {
+        const div = document.createElement("div");
+        div.className = "result-card";
+        div.innerHTML = `
+            <h4>${p.name}</h4>
+            <p>Type : ${p.type}</p>
+            <p>Couvert : ${p.covered ? "Oui" : "Non"}</p>
+            <p>Position : ${p.lat.toFixed(5)}, ${p.lon.toFixed(5)}</p>
+        `;
+        listContainer.appendChild(div);
+    });
+});
+
 }
 
 // Fonction appelée en cas d'échec de la géolocalisation
@@ -164,6 +194,32 @@ async function getNearbyParkings(lat, lon) {
     }
 }
 
+const API_BASE_URL = "https://projet-web-back.cluster-ig3.igpolytech.fr:3002";
+
+// Récupère les parkings enregistrés dans ta base de données (privés)
+async function getPrivateParkings(lat, lon) {
+    try {
+        const res = await fetch(`${API_BASE_URL}/api/parkings?lat=${lat}&lon=${lon}`);
+        if (!res.ok) {
+            console.error("Erreur API privée :", res.status);
+            return [];
+        }
+
+        const data = await res.json();
+        return data.map(p => ({
+            lat: p.lat,
+            lon: p.lon,
+            name: p.nom,
+            type: "privé",
+            covered: false
+        }));
+    } catch (err) {
+        console.error("Erreur récupération parkings privés :", err);
+        return [];
+    }
+}
+
+
 
 // Gestion du formulaire de recherche d'adresse
 document.getElementById("search-form").addEventListener("submit", (event) => {
@@ -200,5 +256,25 @@ document.getElementById("apply-filters-btn").addEventListener("click", () => {
         getNearbyParkings(lat, lng);
     } else {
         alert("Veuillez activer la géolocalisation d'abord.");
+    }
+});
+
+// Affiche le bouton admin si l'utilisateur est admin
+document.addEventListener("DOMContentLoaded", async () => {
+    try {
+        const res = await fetch("https://projet-web-back.cluster-ig3.igpolytech.fr:3002/profile", {
+            credentials: "include"
+        });
+        if (res.ok) {
+            const user = await res.json();
+            if (user.role === "admin") {
+                const container = document.getElementById("admin-btn-container");
+                if (container) {
+                    container.innerHTML = `<a href="/html/admin.html" class="cta-button" style="margin:10px 0;display:inline-block;">Admin</a>`;
+                }
+            }
+        }
+    } catch (e) {
+        // utilisateur non connecté ou erreur, ne rien faire
     }
 });
