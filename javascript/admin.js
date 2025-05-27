@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   let selectedLat = null;
   let selectedLon = null;
   let debounceTimeout = null;
+  let currentUser = null;
 
   // Vérifie que l'utilisateur est admin
   try {
