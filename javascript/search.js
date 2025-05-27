@@ -3,9 +3,9 @@ var map = L.map('map')
 map.setView([51.505, -0.09], 13);
 
 // Ajoute la couche de tuiles OpenStreetMap à la carte
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+L.tileLayer('http://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 }).addTo(map);
 
 // Utilise la géolocalisation du navigateur pour suivre la position de l'utilisateur
@@ -27,7 +27,7 @@ function success(position) {
 
     // Icône personnalisée (bleue) pour l'utilisateur
     const userIcon = L.icon({
-        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
+        iconUrl: 'http://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
         iconSize: [25, 41],
         iconAnchor: [12, 41]
     });

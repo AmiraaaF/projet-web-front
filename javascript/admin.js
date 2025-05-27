@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
   } catch (err) {
-    alert("Erreur d’authentification");
+    alert("Erreur d'authentification");
     window.location.href = "/";
     return;
   }
@@ -83,7 +83,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     let lat = selectedLat;
     let lon = selectedLon;
 
-    // Si lat/lon non sélectionnés (ex: utilisateur n’a pas choisi dans la liste)
+    // Si lat/lon non sélectionnés (ex: utilisateur n'a pas choisi dans la liste)
     if (!lat || !lon) {
       try {
         const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(adresse)}&limit=1`);
@@ -107,8 +107,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ nom, adresse, latitude: lat, longitude: lon }),
-
+        body: JSON.stringify({ nom, adresse, lat, lon }),
       });
 
       const data = await res.json();
