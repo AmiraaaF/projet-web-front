@@ -1,4 +1,4 @@
-# 🚗 Parkly
+#  Parkly
 
 **Parkly** est une application web de géolocalisation de parkings publics et de chat communautaire sur les parkings privés.
 
@@ -26,8 +26,10 @@
 - **GSAP** (animation sur le front)
 
 ---
+## Lancement 
 
 
+l'application est publié donc je deploie après modifications avec git push dokku: main pour le dossier projet_web_back et pour le dossier projet_web_front et le site est accessible sur l'addresse : https://projet-web-front.cluster-ig3.igpolytech.fr/ . 
 
 
 
